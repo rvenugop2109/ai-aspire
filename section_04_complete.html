@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 4: The Curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.dark  { background: rgba(28,28,46,0.18); }
+.nav-dot.light { background: rgba(255,255,255,0.25); }
+.nav-dot.active.dark  { background: var(--deep-blue); transform: scale(1.3); }
+.nav-dot.active.light { background: var(--periwinkle); transform: scale(1.3); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  z-index: 100; width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px);
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(14px,1.4vw,18px);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(4px);
+}
+.nav-arrow.up   { top: clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+
+/* Arrow colours per slide — set via JS */
+.arrow-dark  { border: 1px solid rgba(26,26,230,0.2); background: rgba(26,26,230,0.06); color: var(--mid-grey); }
+.arrow-dark:hover  { background: rgba(26,26,230,0.12); border-color: rgba(26,26,230,0.4); color: var(--deep-blue); }
+.arrow-light { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+.arrow-light:hover { background: rgba(123,123,232,0.2); border-color: rgba(123,123,232,0.4); color: var(--white); }
+
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  z-index: 10;
+}
+.badge-light { color: rgba(255,255,255,0.15); }
+.badge-dark  { color: rgba(28,28,46,0.22); }
+
+/* Top bar */
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+/* Dot grid */
+.dot-grid::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 16 — SECTION BREAKER
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-16 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: clamp(60px,8vw,120px);
+}
+#slide-16::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+
+.s16-bg-num {
+  position: absolute; right: clamp(40px,6vw,80px); top: 50%; transform: translateY(-50%);
+  font-size: clamp(200px,28vw,360px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+
+/* Four year bars — decorative bottom right */
+.s16-year-bars {
+  position: absolute; right: clamp(60px,8vw,120px); bottom: clamp(48px,6vw,96px);
+  display: flex; align-items: flex-end; gap: clamp(8px,1vw,16px);
+  pointer-events: none;
+}
+.s16-bar {
+  width: clamp(32px,4vw,60px); border-radius: 6px 6px 2px 2px;
+}
+.s16-bar:nth-child(1) { height: clamp(32px,5vh,60px);  background: rgba(160,160,245,0.25); }
+.s16-bar:nth-child(2) { height: clamp(52px,8vh,96px);  background: rgba(123,123,232,0.35); }
+.s16-bar:nth-child(3) { height: clamp(72px,11vh,132px); background: rgba(51,51,204,0.45); }
+.s16-bar:nth-child(4) { height: clamp(96px,15vh,180px); background: rgba(26,26,230,0.6); }
+
+.s16-bar-labels {
+  position: absolute; right: clamp(60px,8vw,120px); bottom: clamp(24px,3vw,44px);
+  display: flex; gap: clamp(8px,1vw,16px); pointer-events: none;
+}
+.s16-bar-label {
+  width: clamp(32px,4vw,60px); text-align: center;
+  font-size: clamp(8px,0.78vw,10px); font-weight: 700; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+}
+
+.s16-accent-line {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, transparent, var(--periwinkle) 40%, var(--deep-blue) 70%, transparent);
+}
+
+.s16-content { position: relative; z-index: 2; }
+
+.s16-kicker {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s16-kicker::before { content: ''; display: block; width: 40px; height: 2px; background: var(--periwinkle); }
+
+.s16-title {
+  font-size: clamp(48px,8vw,120px); font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.04em; color: var(--white);
+  margin-bottom: clamp(24px,3vw,44px);
+}
+.s16-title .accent { color: var(--pale-blue); }
+
+.s16-desc {
+  font-size: clamp(14px,1.5vw,20px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.65; max-width: 560px;
+}
+.s16-desc strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+/* Year chips */
+.s16-chips {
+  display: flex; gap: clamp(8px,1vw,14px); margin-top: clamp(24px,3vw,44px);
+}
+.s16-chip {
+  padding: clamp(7px,0.8vw,10px) clamp(16px,1.8vw,24px); border-radius: 100px;
+  font-size: clamp(11px,1vw,13px); font-weight: 700; letter-spacing: 0.04em;
+  display: flex; align-items: center; gap: 8px;
+}
+.s16-chip:nth-child(1) { background: rgba(160,160,245,0.12); color: #A0A0F5; border: 1px solid rgba(160,160,245,0.2); }
+.s16-chip:nth-child(2) { background: rgba(123,123,232,0.12); color: #A8A8F0; border: 1px solid rgba(123,123,232,0.2); }
+.s16-chip:nth-child(3) { background: rgba(51,51,204,0.14);  color: #B0B0FF; border: 1px solid rgba(51,51,204,0.22); }
+.s16-chip:nth-child(4) { background: rgba(26,26,230,0.16);  color: var(--pale-blue); border: 1px solid rgba(26,26,230,0.28); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 17 — GRADE 6: DISCOVER (TABBED)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-17 {
+  background: var(--white);
+  display: flex; flex-direction: column;
+  height: 100%;
+}
+#slide-17::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.05) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+/* Grade identity bar */
+.grade-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: clamp(14px,1.6vw,22px) clamp(48px,5.5vw,80px);
+  background: var(--off-white);
+  border-bottom: 1px solid rgba(26,26,230,0.08);
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.grade-bar-left { display: flex; align-items: center; gap: clamp(16px,2vw,28px); }
+.grade-label-big {
+  font-size: clamp(20px,2.8vw,38px); font-weight: 800;
+  color: var(--dark-navy); letter-spacing: -0.02em; line-height: 1;
+}
+.grade-theme-badge {
+  padding: clamp(5px,0.6vw,8px) clamp(14px,1.6vw,20px); border-radius: 100px;
+  background: rgba(160,160,245,0.15); border: 1px solid rgba(160,160,245,0.3);
+  font-size: clamp(11px,1.05vw,14px); font-weight: 800; letter-spacing: 0.06em;
+  color: #5555BB; text-transform: uppercase;
+}
+.grade-bar-right {
+  display: flex; align-items: center; gap: clamp(20px,2.5vw,36px);
+}
+.grade-meta-item {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+.grade-meta-val {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 800; color: var(--dark-navy); line-height: 1;
+}
+.grade-meta-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--light-grey);
+}
+
+/* Tab strip */
+.tab-strip {
+  display: flex; align-items: stretch;
+  border-bottom: 2px solid rgba(26,26,230,0.1);
+  padding: 0 clamp(48px,5.5vw,80px);
+  background: var(--white);
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.tab-btn {
+  padding: clamp(12px,1.4vw,18px) clamp(20px,2.5vw,36px);
+  font-size: clamp(11px,1.05vw,14px); font-weight: 600; letter-spacing: 0.04em;
+  color: var(--light-grey); background: none; border: none;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  cursor: pointer; transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--mid-grey); }
+.tab-btn.active { color: var(--deep-blue); border-bottom-color: var(--deep-blue); font-weight: 700; }
+
+/* Tab panels */
+.tab-panels {
+  flex: 1; position: relative; z-index: 1; overflow: hidden; min-height: 0;
+}
+.tab-panel {
+  position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+  display: grid; grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+.tab-panel.active { opacity: 1; pointer-events: auto; }
+
+/* Panel column shared */
+.tp-col {
+  padding: clamp(28px,3.5vw,48px) clamp(44px,5.5vw,72px);
+  display: flex; flex-direction: column; gap: clamp(12px,1.4vw,18px);
+  overflow-y: auto; min-height: 0;
+}
+.tp-col::-webkit-scrollbar { width: 4px; }
+.tp-col::-webkit-scrollbar-track { background: transparent; }
+.tp-col::-webkit-scrollbar-thumb { background: rgba(26,26,230,0.15); border-radius: 2px; }
+.tp-col-right { background: var(--off-white); border-left: 1px solid rgba(26,26,230,0.07); }
+
+.tp-section-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+}
+
+/* ── TAB 1: OVERVIEW ── */
+.overview-headline {
+  font-size: clamp(15px,1.7vw,22px); font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.02em; color: var(--dark-navy);
+}
+.overview-body {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; border-left: 3px solid rgba(160,160,245,0.5); padding-left: 14px;
+}
+.overview-body strong { color: var(--dark-navy); font-weight: 700; }
+
+.lr-thread-box {
+  padding: clamp(12px,1.4vw,18px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: rgba(160,160,245,0.08);
+  border: 1px solid rgba(160,160,245,0.2);
+}
+.lr-thread-label {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--periwinkle); margin-bottom: 6px;
+}
+.lr-thread-content {
+  font-size: clamp(11px,1.05vw,13px); font-weight: 400; color: var(--mid-grey); line-height: 1.6;
+}
+.lr-thread-content strong { color: var(--dark-navy); font-weight: 600; }
+
+.lr-steps {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.lr-step {
+  display: flex; align-items: center; gap: 10px;
+  font-size: clamp(11px,1.05vw,13px); color: var(--mid-grey);
+}
+.lr-step-arrow { color: rgba(160,160,245,0.6); font-size: 10px; }
+.lr-step-text { font-weight: 500; }
+.lr-step:first-child .lr-step-text { color: var(--dark-navy); font-weight: 700; }
+
+.exit-preview {
+  padding: clamp(12px,1.4vw,18px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: rgba(26,26,230,0.04);
+  border: 1px solid rgba(26,26,230,0.1);
+}
+.exit-preview-label {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--deep-blue); margin-bottom: 8px;
+}
+.exit-preview-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: clamp(10px,0.95vw,12px); color: var(--mid-grey); line-height: 1.5;
+  margin-bottom: 5px;
+}
+.exit-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--deep-blue); flex-shrink: 0; margin-top: 5px; }
+
+/* ── TAB 2: UNITS ── */
+.unit-card {
+  padding: clamp(12px,1.4vw,16px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.08);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.unit-header { display: flex; align-items: center; gap: 10px; }
+.unit-num {
+  width: clamp(22px,2.2vw,28px); height: clamp(22px,2.2vw,28px); border-radius: 6px;
+  background: rgba(26,26,230,0.1); display: flex; align-items: center; justify-content: center;
+  font-size: clamp(9px,0.85vw,11px); font-weight: 800; color: var(--deep-blue); flex-shrink: 0;
+}
+.unit-name { font-size: clamp(12px,1.15vw,15px); font-weight: 700; color: var(--dark-navy); }
+.unit-pillar { font-size: clamp(9px,0.85vw,10px); font-weight: 600; color: var(--light-grey); letter-spacing: 0.06em; }
+.unit-desc { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); line-height: 1.5; padding-left: 32px; }
+
+.month-marker {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(160,160,245,0.8);
+  padding: 4px 0 2px;
+}
+
+/* ── TAB 3: TOOLS ── */
+.tool-row {
+  display: flex; align-items: center; gap: clamp(12px,1.4vw,18px);
+  padding: clamp(10px,1.2vw,15px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.07);
+}
+.tool-icon {
+  width: clamp(30px,3vw,40px); height: clamp(30px,3vw,40px); border-radius: 8px;
+  background: rgba(26,26,230,0.08); border: 1px solid rgba(26,26,230,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(13px,1.3vw,17px); flex-shrink: 0;
+}
+.tool-info {}
+.tool-name { font-size: clamp(12px,1.15vw,14px); font-weight: 700; color: var(--dark-navy); margin-bottom: 2px; }
+.tool-use  { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); line-height: 1.4; }
+.tool-when {
+  margin-left: auto; flex-shrink: 0;
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.06em;
+  color: var(--periwinkle); text-align: right; white-space: nowrap;
+}
+
+.landscape-note, .tool-note {
+  padding: clamp(10px,1.2vw,14px) clamp(14px,1.6vw,18px);
+  border-radius: 8px;
+  font-size: clamp(10px,0.95vw,12px); color: var(--mid-grey); line-height: 1.55;
+}
+.landscape-note { background: rgba(160,160,245,0.07); border: 1px solid rgba(160,160,245,0.15); }
+.tool-note strong { color: var(--dark-navy); font-weight: 600; }
+.landscape-note strong { color: var(--dark-navy); font-weight: 600; }
+
+/* ── TAB 4: ASSESSMENT ── */
+.assess-card {
+  padding: clamp(11px,1.3vw,15px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.07);
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: clamp(10px,1.2vw,16px);
+}
+.assess-type {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 100px;
+  white-space: nowrap;
+}
+.type-quiz   { background: rgba(123,123,232,0.1); color: var(--periwinkle); }
+.type-test   { background: rgba(26,26,230,0.1); color: var(--deep-blue); }
+.type-port   { background: rgba(51,51,204,0.08); color: var(--mid-blue); }
+.assess-name { font-size: clamp(12px,1.1vw,14px); font-weight: 700; color: var(--dark-navy); }
+.assess-desc { font-size: clamp(10px,0.95vw,11px); font-weight: 400; color: var(--light-grey); margin-top: 2px; }
+.assess-when { font-size: clamp(10px,0.95vw,11px); font-weight: 600; color: var(--light-grey); text-align: right; white-space: nowrap; }
+
+.credential-box {
+  padding: clamp(14px,1.6vw,20px) clamp(16px,1.8vw,24px);
+  border-radius: 10px; background: rgba(26,26,230,0.05); border: 1px solid rgba(26,26,230,0.14);
+  display: flex; align-items: center; gap: 14px;
+}
+.cred-icon { font-size: clamp(22px,2.4vw,30px); flex-shrink: 0; }
+.cred-title { font-size: clamp(13px,1.25vw,16px); font-weight: 800; color: var(--dark-navy); margin-bottom: 3px; }
+.cred-sub   { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.slide::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.05) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(28,28,46,0.18); border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.active { background: var(--deep-blue); transform: scale(1.3); }
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
+  width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px); border-radius: 50%;
+  border: 1px solid rgba(26,26,230,0.2); background: rgba(26,26,230,0.06); color: var(--mid-grey);
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.nav-arrow:hover { background: rgba(26,26,230,0.12); border-color: rgba(26,26,230,0.4); color: var(--deep-blue); }
+.nav-arrow.up   { top: clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(28,28,46,0.22); z-index: 10;
+}
+
+/* Grade colour tokens */
+/* G7 — periwinkle */
+.g7-badge { background: rgba(123,123,232,0.12); border: 1px solid rgba(123,123,232,0.25); color: #4444BB; }
+.g7-lr    { background: rgba(123,123,232,0.07); border: 1px solid rgba(123,123,232,0.18); }
+.g7-lr .lr-thread-label { color: var(--periwinkle); }
+.g7-lr .lr-step-arrow  { color: rgba(123,123,232,0.6); }
+.g7-month { color: rgba(123,123,232,0.7); }
+.g7-overview-body { border-left: 3px solid rgba(123,123,232,0.4); }
+
+/* G8 — mid-blue */
+.g8-badge { background: rgba(51,51,204,0.1); border: 1px solid rgba(51,51,204,0.22); color: #3333AA; }
+.g8-lr    { background: rgba(51,51,204,0.06); border: 1px solid rgba(51,51,204,0.16); }
+.g8-lr .lr-thread-label { color: var(--mid-blue); }
+.g8-lr .lr-step-arrow  { color: rgba(51,51,204,0.6); }
+.g8-month { color: rgba(51,51,204,0.7); }
+.g8-overview-body { border-left: 3px solid rgba(51,51,204,0.4); }
+
+/* G9 — deep-blue */
+.g9-badge { background: rgba(26,26,230,0.12); border: 1px solid rgba(26,26,230,0.28); color: var(--deep-blue); }
+.g9-lr    { background: rgba(26,26,230,0.05); border: 1px solid rgba(26,26,230,0.15); }
+.g9-lr .lr-thread-label { color: var(--deep-blue); }
+.g9-lr .lr-step-arrow  { color: rgba(26,26,230,0.6); }
+.g9-month { color: rgba(26,26,230,0.65); }
+.g9-overview-body { border-left: 3px solid rgba(26,26,230,0.5); }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ═══ SLIDE 16 — SECTION BREAKER ════════════════════════════════════ -->
+  <div class="slide active" id="slide-16">
+    <div class="s16-accent-line"></div>
+    <div class="s16-bg-num">04</div>
+
+    <div class="s16-year-bars">
+      <div class="s16-bar"></div>
+      <div class="s16-bar"></div>
+      <div class="s16-bar"></div>
+      <div class="s16-bar"></div>
+    </div>
+    <div class="s16-bar-labels">
+      <div class="s16-bar-label">G6</div>
+      <div class="s16-bar-label">G7</div>
+      <div class="s16-bar-label">G8</div>
+      <div class="s16-bar-label">G9</div>
+    </div>
+
+    <div class="s16-content">
+      <div class="s16-kicker">Section Four</div>
+      <div class="s16-title">The<br><span class="accent">Curriculum</span></div>
+      <p class="s16-desc">
+        Four years of sessions — each one designed for the student
+        standing in front of it. Every month mapped, every tool introduced at
+        the right moment, <strong>every lesson connected to the year before
+        and the year ahead.</strong>
+      </p>
+      <div class="s16-chips">
+        <span class="s16-chip">Grade 6 · Discover</span>
+        <span class="s16-chip">Grade 7 · Understand</span>
+        <span class="s16-chip">Grade 8 · Apply</span>
+        <span class="s16-chip">Grade 9 · Evaluate &amp; Create</span>
+      </div>
+    </div>
+
+    <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 16 / 32</div>
+  </div>
+
+
+  <!-- ═══ SLIDE 17 — GRADE 6: DISCOVER ══════════════════════════════════ -->
+  <div class="slide" id="slide-17">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="top-bar-label">The Curriculum</div>
+      <div class="top-bar-title">Grade 6 — Year One of Four</div>
+    </div>
+
+    <!-- Grade identity bar -->
+    <div class="grade-bar">
+      <div class="grade-bar-left">
+        <div class="grade-label-big">Grade 6</div>
+        <div class="grade-theme-badge">DISCOVER</div>
+        <div style="font-size:clamp(12px,1.2vw,15px);color:var(--light-grey);font-style:italic;">
+          "What is AI? How does it think?"
+        </div>
+      </div>
+      <div class="grade-bar-right">
+        <div class="grade-meta-item">
+          <div class="grade-meta-val">28</div>
+          <div class="grade-meta-label">Sessions</div>
+        </div>
+        <div class="grade-meta-item">
+          <div class="grade-meta-val">~42 hrs</div>
+          <div class="grade-meta-label">Total</div>
+        </div>
+        <div class="grade-meta-item">
+          <div class="grade-meta-val">Jun – Dec</div>
+          <div class="grade-meta-label">Schedule</div>
+        </div>
+        <div class="grade-meta-item">
+          <div class="grade-meta-val">Age 11–12</div>
+          <div class="grade-meta-label">Students</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab strip -->
+    <div class="tab-strip" id="tabs-17">
+      <button class="tab-btn active" data-tab="t17-overview">Overview</button>
+      <button class="tab-btn" data-tab="t17-units">Units</button>
+      <button class="tab-btn" data-tab="t17-tools">Tools</button>
+      <button class="tab-btn" data-tab="t17-assessment">Assessment</button>
+    </div>
+
+    <!-- Tab panels -->
+    <div class="tab-panels">
+
+      <!-- OVERVIEW -->
+      <div class="tab-panel active" id="t17-overview">
+        <div class="tp-col" style="justify-content:center;">
+          <div class="tp-section-label">Year Theme</div>
+          <div class="overview-headline">The foundation year. No intimidation. Maximum curiosity.</div>
+          <div class="overview-body">
+            Grade 6 opens with <strong>no devices for the first 8 weeks.</strong>
+            Students build the logical reasoning foundation on paper before a screen appears.
+            By the time AI tools are introduced in October, students have the mental models
+            to use them meaningfully — not just playfully.
+          </div>
+        </div>
+        <div class="tp-col tp-col-right" style="justify-content:center;">
+          <div class="tp-section-label">Exit Competencies — Grade 6</div>
+          <div class="exit-preview">
+            <div class="exit-preview-label">A student leaving Grade 6 can —</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>Solve visual, spatial, analogy, and if-then reasoning problems and explain their working</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>Explain what AI is and how it learns — without jargon — using the pattern recognition framing</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>Identify at least 5 AI applications in everyday Indian life and describe what each is doing</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>Write a clear, specific prompt — iterate it based on output quality — and document what changed and why</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>State one way AI can be wrong and one way it can be unfair — with a real example of each</div>
+            <div class="exit-preview-item"><div class="exit-dot"></div>Name three things they will never share with an AI tool and explain the reasoning</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UNITS -->
+      <div class="tab-panel" id="t17-units">
+        <div class="tp-col">
+          <div class="tp-section-label">Five Units · June to December</div>
+
+          <div class="month-marker">June – July</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">1</div>
+              <div>
+                <div class="unit-name">How Do We Think?</div>
+                <div class="unit-pillar">Pillar 1 — Think Clearly · 8 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">The LR foundation — all offline, all pen and paper. <strong>LR sequence:</strong> visual patterns → spatial reasoning → analogy → classification → cause-effect → if-then logic. No AI introduced yet. The payoff comes later.</div>
+          </div>
+
+          <div class="month-marker">August</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">2</div>
+              <div>
+                <div class="unit-name">What is AI?</div>
+                <div class="unit-pillar">Pillar 2 — Understand the Landscape · 4 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">AI demystified through the pattern recognition framing students already have. Human vs machine intelligence. Narrow vs general AI. AI in Indian daily life. What AI cannot do.</div>
+          </div>
+
+          <div class="month-marker">September</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">3</div>
+              <div>
+                <div class="unit-name">Data: The Food AI Eats</div>
+                <div class="unit-pillar">Pillar 2 — Understand the Landscape · 4 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">What data is. Good data vs bad data. How machines learn from examples — the Spam Filter Game. Google Teachable Machine demonstrated by teacher. Bias in data introduced. <strong>LR applied:</strong> classification logic from Unit 1 reappears here — students recognise it.</div>
+          </div>
+        </div>
+        <div class="tp-col tp-col-right">
+          <div class="tp-section-label">&nbsp;</div>
+
+          <div class="month-marker">October – November</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">4</div>
+              <div>
+                <div class="unit-name">My First Prompts</div>
+                <div class="unit-pillar">Pillar 3 — Work With AI · 7 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">The Robot Sandwich Game. First tool observation session. First student hands-on in pairs. Prompts that fail and why. Personal interest topics. Prompt Portfolio compiled. <strong>LR applied:</strong> cause-effect reasoning — if I change the prompt this way, the output changes that way.</div>
+          </div>
+
+          <div class="month-marker">November – December</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">5</div>
+              <div>
+                <div class="unit-name">AI Ethics: First Questions</div>
+                <div class="unit-pillar">Pillar 5 — Think Responsibly · 6 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">Can AI be wrong? Who made this AI and why? Privacy — the Never Share list. Is it fair? AI ethics pledge. Students leave with three personal responsible-use commitments. <strong>LR applied:</strong> if-then logic used to reason through ethical scenarios.</div>
+          </div>
+
+          <div class="month-marker">December</div>
+          <div class="unit-card">
+            <div class="unit-header">
+              <div class="unit-num">★</div>
+              <div>
+                <div class="unit-name">Showcase + Final Assessment</div>
+                <div class="unit-pillar">All Pillars · 2 sessions</div>
+              </div>
+            </div>
+            <div class="unit-desc">AI Discovery Journal compiled and presented. Each student presents one item to the class. Written final assessment. Grade 6 badge awarded.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOLS -->
+      <div class="tab-panel" id="t17-tools">
+        <div class="tp-col">
+          <div class="tp-section-label">Tools Introduced This Year</div>
+
+          <div class="tool-row">
+            <div class="tool-icon">🧪</div>
+            <div class="tool-info">
+              <div class="tool-name">Google Teachable Machine</div>
+              <div class="tool-use">Teacher demonstration only — trains a live image classifier in front of the class. No student accounts needed.</div>
+            </div>
+            <div class="tool-when">Week 15<br>Demo only</div>
+          </div>
+
+          <div class="tool-row">
+            <div class="tool-icon">💬</div>
+            <div class="tool-info">
+              <div class="tool-name">ChatGPT Edu</div>
+              <div class="tool-use">Teacher demo Week 18. First student pairs Week 19. School-managed accounts required before October.</div>
+            </div>
+            <div class="tool-when">Week 18–19<br>Demo → Pairs</div>
+          </div>
+
+          <div class="tool-row">
+            <div class="tool-icon">🤖</div>
+            <div class="tool-info">
+              <div class="tool-name">Claude for Education</div>
+              <div class="tool-use">Introduced alongside ChatGPT Edu. Students compare outputs from both tools with the same prompt.</div>
+            </div>
+            <div class="tool-when">Week 18–19<br>Alongside ChatGPT</div>
+          </div>
+        </div>
+        <div class="tp-col tp-col-right">
+          <div class="tp-section-label">Tool Introduction Approach</div>
+          <div class="landscape-note">
+            In Grade 6, tools are introduced <strong>slowly and carefully</strong> — observation before participation.
+            Students watch the teacher use the tool for a full session before touching it themselves.
+            The first student hands-on session is always in pairs, with the teacher circulating.
+            No student works on a tool alone in Grade 6.
+          </div>
+
+          <div class="tp-section-label" style="margin-top:8px">Compliance Checkpoint</div>
+          <div class="landscape-note" style="border-color: rgba(230,160,32,0.3); background: rgba(230,160,32,0.06);">
+            School-managed ChatGPT Edu and Claude for Education accounts must be active and tested
+            before Week 18. Parental consent forms must be signed and on file.
+            Teacher must complete a dry-run session independently before Week 18.
+          </div>
+
+          <div class="tp-section-label" style="margin-top:8px">Data Hygiene Rule — Established in Grade 6</div>
+          <div class="landscape-note" style="border-color: rgba(26,26,230,0.2); background: rgba(26,26,230,0.05);">
+            From the first tool session: <strong>"No real names, no personal details, no school information in any prompt — ever."</strong>
+            This rule is taught as a skill, not a restriction, and carries through all four grades.
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSESSMENT -->
+      <div class="tab-panel" id="t17-assessment">
+        <div class="tp-col">
+          <div class="tp-section-label">Assessments This Year</div>
+
+          <div class="assess-card">
+            <span class="assess-type type-quiz">Quiz 1</span>
+            <div><div class="assess-name">LR Foundations Quiz</div><div class="assess-desc">All LR types: visual patterns, spatial, analogy, classification, cause-effect, if-then</div></div>
+            <div class="assess-when">Week 8<br>Pen &amp; paper · 20 min</div>
+          </div>
+          <div class="assess-card">
+            <span class="assess-type type-quiz">Quiz 2</span>
+            <div><div class="assess-name">AI Concepts Quiz</div><div class="assess-desc">AI basics, narrow vs general AI, real-world identification, AI limitations</div></div>
+            <div class="assess-when">Week 12<br>Pen &amp; paper · 20 min</div>
+          </div>
+          <div class="assess-card">
+            <span class="assess-type type-quiz">Quiz 3</span>
+            <div><div class="assess-name">Ethics and Privacy Quiz</div><div class="assess-desc">AI errors, privacy rules, fairness concepts, responsible use commitments</div></div>
+            <div class="assess-when">Week 26<br>Pen &amp; paper · 15 min</div>
+          </div>
+          <div class="assess-card">
+            <span class="assess-type type-test">Mid-Year Test</span>
+            <div><div class="assess-name">Units 1–4 Comprehensive</div><div class="assess-desc">LR questions, AI concept short answers, one prompt-writing task</div></div>
+            <div class="assess-when">Week 22<br>Written · 45 min</div>
+          </div>
+          <div class="assess-card">
+            <span class="assess-type type-test">Final Assessment</span>
+            <div><div class="assess-name">Full Programme Assessment</div><div class="assess-desc">LR across all types, AI concepts, one ethics scenario response</div></div>
+            <div class="assess-when">Week 28<br>Written · 30 min</div>
+          </div>
+        </div>
+        <div class="tp-col tp-col-right">
+          <div class="tp-section-label">Portfolio Artefacts</div>
+
+          <div class="assess-card">
+            <span class="assess-type type-port">Portfolio</span>
+            <div><div class="assess-name">Prompt Portfolio</div><div class="assess-desc">Curated best prompts, stated goal per prompt, self-reflections, what the student would change</div></div>
+            <div class="assess-when">Submitted<br>Week 22</div>
+          </div>
+          <div class="assess-card">
+            <span class="assess-type type-port">Journal</span>
+            <div><div class="assess-name">AI Discovery Journal</div><div class="assess-desc">Best prompt entries, one AI concept in own words, Never Share pledge, personal reflection on learning journey</div></div>
+            <div class="assess-when">Submitted<br>Week 28</div>
+          </div>
+
+          <div class="tp-section-label" style="margin-top:4px">Credential</div>
+          <div class="credential-box">
+            <div class="cred-icon">🏅</div>
+            <div>
+              <div class="cred-title">Campuslogix AI Aspire — Grade 6 Badge</div>
+              <div class="cred-sub">First of four stackable badges · Awarded on completion of all programme requirements · December</div>
+            </div>
+          </div>
+
+          <div class="landscape-note" style="border-color:rgba(160,160,245,0.2);background:rgba(160,160,245,0.06);">
+            Assessment in Grade 6 is <strong>low-stakes and frequent</strong> — building the habit of reflection
+            without creating exam anxiety. Portfolio artefacts carry equal weight to formal assessments.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-panels -->
+
+    <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 17 / 32</div>
+  </div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 18 — GRADE 7: UNDERSTAND
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-18">
+  <div class="top-bar">
+    <div class="top-bar-label">The Curriculum</div>
+    <div class="top-bar-title">Grade 7 — Year Two of Four</div>
+  </div>
+  <div class="grade-bar">
+    <div class="grade-bar-left">
+      <div class="grade-label-big">Grade 7</div>
+      <div class="grade-theme-badge g7-badge">UNDERSTAND</div>
+      <div class="grade-question">"How does AI learn? What is data?"</div>
+    </div>
+    <div class="grade-bar-right">
+      <div class="grade-meta-item"><div class="grade-meta-val">28</div><div class="grade-meta-label">Sessions</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">~42 hrs</div><div class="grade-meta-label">Total</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Jun – Dec</div><div class="grade-meta-label">Schedule</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Age 12–13</div><div class="grade-meta-label">Students</div></div>
+    </div>
+  </div>
+  <div class="tab-strip" id="tabs-18">
+    <button class="tab-btn active" data-tab="t18-overview">Overview</button>
+    <button class="tab-btn" data-tab="t18-units">Units</button>
+    <button class="tab-btn" data-tab="t18-tools">Tools</button>
+    <button class="tab-btn" data-tab="t18-assessment">Assessment</button>
+  </div>
+  <div class="tab-panels">
+
+    <!-- OVERVIEW -->
+    <div class="tab-panel active" id="t18-overview">
+      <div class="tp-col" style="justify-content:center;">
+        <div class="tp-section-label">Year Theme</div>
+        <div class="overview-headline">Inquiry-led. Students form opinions, not just receive information.</div>
+        <div class="overview-body g7-overview-body">
+          Grade 7 shifts from <strong>discovery to interrogation</strong>. LR is no longer a standalone unit — it is the method applied inside every AI session. Prompting gets a named framework (RCT). Students produce their first real research artefact — the AI Report — presented live to the class.
+        </div>
+      </div>
+      <div class="tp-col tp-col-right" style="justify-content:center;">
+        <div class="tp-section-label">Exit Competencies — Grade 7</div>
+        <div class="exit-preview">
+          <div class="exit-preview-label">A student leaving Grade 7 can —</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Explain how a machine learning model learns — using a non-technical analogy — and distinguish supervised, unsupervised, and reinforcement learning</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Read a data chart critically and identify at least one way it could be misleading or misinterpreted</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Write a structured RCT prompt for any subject area and evaluate the quality of the output against the prompt's intent</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Use Perplexity for research and clearly distinguish between a cited AI result and an uncited generative AI response</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Explain why AI hallucinates, identify a deepfake using a structured verification process, and name at least 3 logical fallacies in AI claims</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNITS -->
+    <div class="tab-panel" id="t18-units">
+      <div class="tp-col">
+        <div class="tp-section-label">Five Units · June to December</div>
+        <div class="month-marker g7-month">June</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">1</div><div><div class="unit-name">How AI Really Learns</div><div class="unit-pillar">Pillar 2 · 4 sessions</div></div></div>
+          <div class="unit-desc">Neural networks by visual analogy. Training, testing, accuracy. Teachable Machine — student hands-on for the first time. Three ML types with Indian examples. Quiz 1. <strong>LR applied:</strong> hypothesis testing — students predict model accuracy before running it.</div>
+        </div>
+        <div class="month-marker g7-month">July</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">2</div><div><div class="unit-name">Data Literacy</div><div class="unit-pillar">Pillar 2 · 4 sessions</div></div></div>
+          <div class="unit-desc">What data actually says vs what it shows. Misleading charts — students redraw them honestly. Two stories from one dataset. Quiz 2. <strong>LR applied:</strong> correlation vs causation — the central reasoning skill of the unit.</div>
+        </div>
+        <div class="month-marker g7-month">August</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">3</div><div><div class="unit-name">Prompt Engineering L1: RCT Framework</div><div class="unit-pillar">Pillar 3 · 4 sessions</div></div></div>
+          <div class="unit-desc">Role + Context + Task introduced as a named, documented framework. Same question three ways. RCT across five subjects. Prompt quality evaluation and peer review. Perplexity teacher demo. <strong>LR applied:</strong> structured argument construction — RCT is logical decomposition applied to communication.</div>
+        </div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">&nbsp;</div>
+        <div class="month-marker g7-month">September</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">4</div><div><div class="unit-name">AI in the Real World: Indian Context</div><div class="unit-pillar">Pillars 2 + 3 · 4 sessions</div></div></div>
+          <div class="unit-desc">Five Indian AI case studies. Student Perplexity research. RCT prompting for report structure. 5-minute AI Report presented live to class. AI Report is the primary Unit 4 artefact. <strong>LR applied:</strong> source evaluation — students distinguish cited AI results from uncited generative responses.</div>
+        </div>
+        <div class="month-marker g7-month">October – November</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">5</div><div><div class="unit-name">Ethics: When AI Gets It Wrong</div><div class="unit-pillar">Pillar 5 · 4 sessions + Canva project</div></div></div>
+          <div class="unit-desc">Hallucination design test. Deepfakes — verification process. The Real News Challenge. Quiz 3. Responsible AI Charter. Mid-Year Test. Canva AI 5-slide explainer project. <strong>LR applied:</strong> fallacy identification — students name and spot fallacies in real AI arguments.</div>
+        </div>
+        <div class="month-marker g7-month">December</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">★</div><div><div class="unit-name">Showcase + Final Assessment</div><div class="unit-pillar">All Pillars · 2 sessions</div></div></div>
+          <div class="unit-desc">AI Research Portfolio compiled. Student presents strongest piece — 3 minutes. Written final assessment. Grade 7 badge awarded.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="tab-panel" id="t18-tools">
+      <div class="tp-col">
+        <div class="tp-section-label">Tools This Year</div>
+        <div class="tool-row"><div class="tool-icon">🧪</div><div class="tool-name">Google Teachable Machine</div><div class="tool-use">Student hands-on this year — pairs train, test, and break their own classifier</div><div class="tool-when">Week 3<br>Student pairs</div></div>
+        <div class="tool-row"><div class="tool-icon">💬</div><div><div class="tool-name">ChatGPT Edu</div><div class="tool-use">RCT framework practice across all subjects; prompt quality comparison and peer evaluation</div></div><div class="tool-when">Continuing<br>from G6</div></div>
+        <div class="tool-row"><div class="tool-icon">🤖</div><div><div class="tool-name">Claude for Education</div><div class="tool-use">RCT prompt comparison; argument evaluation; side-by-side output analysis</div></div><div class="tool-when">Continuing<br>from G6</div></div>
+        <div class="tool-row"><div class="tool-icon">🔍</div><div><div class="tool-name">Perplexity</div><div class="tool-use">AI-augmented research with citations; contrast with generative AI; source credibility evaluation</div></div><div class="tool-when">W10 demo<br>W13 student</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">&nbsp;</div>
+        <div class="tool-row"><div class="tool-icon">🎨</div><div><div class="tool-name">Canva for Education AI</div><div class="tool-use">5-slide AI explainer on student's Unit 4 AI application; prompt-to-visual design</div></div><div class="tool-when">W23 demo<br>W24 student</div></div>
+        <div class="tp-section-label">Slide Tools Landscape Demo — Week 23</div>
+        <div class="tool-note" style="background:rgba(123,123,232,0.06);border:1px solid rgba(123,123,232,0.15);">
+          Before hands-on with Canva AI, teacher demos three tools side by side with the same brief:
+          <strong>Canva AI · Gamma · Google Slides + Gemini</strong> (one-line awareness for Workspace schools).
+          Students complete Tool Choice Log entry — first entry since Grade 7.
+        </div>
+        <div class="tp-section-label">New this year</div>
+        <div class="tool-note" style="background:rgba(26,26,230,0.04);border:1px solid rgba(26,26,230,0.1);">
+          <strong>Perplexity</strong> is the significant new tool this year — the contrast between
+          a cited AI search result and an uncited generative response is a core Grade 7 literacy lesson.
+          Used on shared or school-managed accounts in Weeks 13–15.
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="tab-panel" id="t18-assessment">
+      <div class="tp-col">
+        <div class="tp-section-label">Assessments This Year</div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 1</span><div><div class="assess-name">How AI Learns</div><div class="assess-desc">ML types, training data, model accuracy, Teachable Machine concepts</div></div><div class="assess-when">Week 4 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 2</span><div><div class="assess-name">Data Literacy</div><div class="assess-desc">Chart reading, correlation vs causation, misleading data identification</div></div><div class="assess-when">Week 8 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 3</span><div><div class="assess-name">Ethics: When AI Gets It Wrong</div><div class="assess-desc">Hallucination, deepfakes, misinformation verification, logical fallacies</div></div><div class="assess-when">Week 20 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Mid-Year Test</span><div><div class="assess-name">Units 1–4 Comprehensive</div><div class="assess-desc">LR questions, AI literacy, one RCT prompt-writing task, one data chart to analyse</div></div><div class="assess-when">Week 22 · 45 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Final Assessment</span><div><div class="assess-name">Full Programme Assessment</div><div class="assess-desc">LR, AI concepts, RCT prompt task, one ethics scenario response</div></div><div class="assess-when">Week 28 · 35 min</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">Portfolio &amp; Showcase Artefacts</div>
+        <div class="assess-card"><span class="assess-type type-port">Portfolio</span><div><div class="assess-name">Prompt Portfolio</div><div class="assess-desc">RCT prompts across 5 subjects with goals, peer reviews, and self-evaluation notes</div></div><div class="assess-when">Week 22</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Showcase</span><div><div class="assess-name">AI Report — Live Presentation</div><div class="assess-desc">Real Indian AI application: function, builder, benefit, risk, personal finding — 5 min live</div></div><div class="assess-when">Week 16</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Portfolio</span><div><div class="assess-name">AI Research Portfolio</div><div class="assess-desc">Best RCT prompts, AI Report, Canva deck, and 1-page written reflection on the year</div></div><div class="assess-when">Week 28</div></div>
+        <div class="credential-box">
+          <div class="cred-icon">🏅</div>
+          <div><div class="cred-title">Campuslogix AI Aspire — Grade 7 Badge</div><div class="cred-sub">Second of four stackable badges · Students carry their Prompt Portfolio and AI Research Portfolio into Grade 8</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 18 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 19 — GRADE 8: APPLY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-19">
+  <div class="top-bar">
+    <div class="top-bar-label">The Curriculum</div>
+    <div class="top-bar-title">Grade 8 — Year Three of Four</div>
+  </div>
+  <div class="grade-bar">
+    <div class="grade-bar-left">
+      <div class="grade-label-big">Grade 8</div>
+      <div class="grade-theme-badge g8-badge">APPLY</div>
+      <div class="grade-question">"How do I work with AI as a tool?"</div>
+    </div>
+    <div class="grade-bar-right">
+      <div class="grade-meta-item"><div class="grade-meta-val">28</div><div class="grade-meta-label">Sessions</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">~42 hrs</div><div class="grade-meta-label">Total</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Jun – Dec</div><div class="grade-meta-label">Schedule</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Age 13–14</div><div class="grade-meta-label">Students</div></div>
+    </div>
+  </div>
+  <div class="tab-strip" id="tabs-19">
+    <button class="tab-btn active" data-tab="t19-overview">Overview</button>
+    <button class="tab-btn" data-tab="t19-units">Units</button>
+    <button class="tab-btn" data-tab="t19-tools">Tools</button>
+    <button class="tab-btn" data-tab="t19-assessment">Assessment</button>
+  </div>
+  <div class="tab-panels">
+
+    <!-- OVERVIEW -->
+    <div class="tab-panel active" id="t19-overview">
+      <div class="tp-col" style="justify-content:center;">
+        <div class="tp-section-label">Year Theme</div>
+        <div class="overview-headline">The year students stop being analysts and become builders.</div>
+        <div class="overview-body g8-overview-body">
+          Grade 8 is the most significant shift in the programme. Vibe coding enters — students build real, functional applications by describing what they want in plain English. The <strong>Mini-Project in November</strong> is the centrepiece: teams of 3 identify a real problem, build an AI-assisted solution on Lovable, and present to a panel.
+        </div>
+      </div>
+      <div class="tp-col tp-col-right" style="justify-content:center;">
+        <div class="tp-section-label">Exit Competencies — Grade 8</div>
+        <div class="exit-preview">
+          <div class="exit-preview-label">A student leaving Grade 8 can —</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Design a documented prompt chain of 4+ prompts for a complex real-world output — with a flowchart showing the logic before execution</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Build a functioning interactive web application through vibe coding on Lovable — from systems map to working prototype</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Diagnose why a vibe-coded application is not behaving as intended and direct the AI builder to fix it with a precise problem statement</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Map the accountability chain for an AI failure and identify where responsibility sits at each node</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Write an AI solution brief with fairness safeguards designed in — not retrofitted as an afterthought</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNITS -->
+    <div class="tab-panel" id="t19-units">
+      <div class="tp-col">
+        <div class="tp-section-label">Six Units + Mini-Project · June to December</div>
+        <div class="month-marker g8-month">June</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">1</div><div><div class="unit-name">Prompt Engineering L2: Direction &amp; Chaining</div><div class="unit-pillar">Pillar 3 · 4 sessions</div></div></div>
+          <div class="unit-desc">Output shaping — tone, format, length, audience. Negative prompting. Persona assignment. The Client Brief — 4-link prompt chain submitted as the assessed artefact. Quiz 1. <strong>LR applied:</strong> flowchart design — every prompt chain is mapped on paper before execution.</div>
+        </div>
+        <div class="month-marker g8-month">July</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">2</div><div><div class="unit-name">Vibe Coding: Think Like a Builder</div><div class="unit-pillar">Pillars 3 + 4 · 4 sessions</div></div></div>
+          <div class="unit-desc">Lovable introduced. Teacher demo first — students observe only. First student pairs build "My Interests" app. Debug Like a Detective exercise. <strong>LR applied:</strong> systems thinking — input/process/output mapped on paper before Lovable is opened.</div>
+        </div>
+        <div class="month-marker g8-month">August</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">3</div><div><div class="unit-name">Vibe Coding: Build and Iterate</div><div class="unit-pillar">Pillar 4 · 4 sessions</div></div></div>
+          <div class="unit-desc">Replit transparency session — read what Lovable generated, no typing. Build something useful for school. Peer testing. Stretch: add one AI-powered feature. <strong>LR applied:</strong> iterative refinement — build → test → diagnose → improve as a documented cycle.</div>
+        </div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">&nbsp;</div>
+        <div class="month-marker g8-month">September</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">4</div><div><div class="unit-name">AI for Learning</div><div class="unit-pillar">Pillars 2 + 3 · 4 sessions</div></div></div>
+          <div class="unit-desc">NotebookLM — research tools landscape demo then hands-on. Feynman Technique with AI. Gamma for revision (comparison). AI for essay planning via chain prompting. Quiz 2.</div>
+        </div>
+        <div class="month-marker g8-month">October</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">5</div><div><div class="unit-name">Ethics: Who is Responsible?</div><div class="unit-pillar">Pillar 5 · 4 sessions</div></div></div>
+          <div class="unit-desc">Three real case studies — Amazon, COMPAS, AI in Indian healthcare. Design for Fairness — Flip the Brief. Environmental cost. DPDP Act for builders. Quiz 3. <strong>LR applied:</strong> accountability chains — AI failure traced back through decision nodes as a flowchart.</div>
+        </div>
+        <div class="month-marker g8-month">November</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">★</div><div><div class="unit-name">Mini-Project — Teams of 3</div><div class="unit-pillar">All Pillars · 6 sessions</div></div></div>
+          <div class="unit-desc">Identify a real, verifiable problem. Systems map required before Lovable is opened. Two build sessions with mid-session peer review. Canva AI or Gamma deck. 5-min panel presentation to at least 2 teachers, one external.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="tab-panel" id="t19-tools">
+      <div class="tp-col">
+        <div class="tp-section-label">Tools This Year</div>
+        <div class="tool-row"><div class="tool-icon">🏗️</div><div><div class="tool-name">Lovable</div><div class="tool-use">Primary vibe coding environment — natural language to working web app. Free tier: 5 messages/day. All prompts pre-drafted on paper first.</div></div><div class="tool-when">W6 student pairs<br>Primary builder</div></div>
+        <div class="tool-row"><div class="tool-icon">⚡</div><div><div class="tool-name">Bolt.new</div><div class="tool-use">Experimentation and backup environment — more generous free tier. Students test ideas on Bolt before committing Lovable messages.</div></div><div class="tool-when">W6 alongside<br>Lovable</div></div>
+        <div class="tool-row"><div class="tool-icon">👁️</div><div><div class="tool-name">Replit</div><div class="tool-use">One session only — teacher loads Lovable-generated code. Students read and discuss structure. No student typing. Transparency only.</div></div><div class="tool-when">W9 · Demo only<br>No typing</div></div>
+        <div class="tool-row"><div class="tool-icon">📓</div><div><div class="tool-name">NotebookLM</div><div class="tool-use">Primary research tool — upload sources, AI conversations grounded in those sources only. Cannot hallucinate beyond uploaded documents.</div></div><div class="tool-when">W13 · Introduced<br>with landscape demo</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">&nbsp;</div>
+        <div class="tool-row"><div class="tool-icon">🎨</div><div><div class="tool-name">Canva for Education AI</div><div class="tool-use">Mini-Project presentation decks. Advanced prompt-to-visual design.</div></div><div class="tool-when">Continuing<br>from G7</div></div>
+        <div class="tp-section-label">Research Tools Landscape Demo — Week 13</div>
+        <div class="tool-note" style="background:rgba(51,51,204,0.05);border:1px solid rgba(51,51,204,0.15);">
+          Before NotebookLM hands-on, teacher demos four tools with the same research question:
+          <strong>NotebookLM · Gamma · Chronicle · Perplexity.</strong>
+          Students observe the different output formats, depth, and sourcing approaches.
+          Tool Choice Log updated.
+        </div>
+        <div class="tp-section-label">Lovable Free Tier — Classroom Strategy</div>
+        <div class="tool-note" style="background:rgba(26,26,230,0.04);border:1px solid rgba(26,26,230,0.12);">
+          5 Lovable messages per day is a constraint — and a <strong>feature.</strong> It forces students to plan before they prompt. All Lovable prompts are drafted on paper first. Bolt.new handles experimentation. This mirrors real-world professional constraints.
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="tab-panel" id="t19-assessment">
+      <div class="tp-col">
+        <div class="tp-section-label">Assessments This Year</div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 1</span><div><div class="assess-name">Prompt Engineering L2</div><div class="assess-desc">Output shaping, negative prompting, persona assignment, chain prompting logic</div></div><div class="assess-when">Week 4 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 2</span><div><div class="assess-name">AI for Learning</div><div class="assess-desc">NotebookLM, Feynman technique, identifying AI errors, prompt chain design for study</div></div><div class="assess-when">Week 16 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 3</span><div><div class="assess-name">Ethics: Accountability</div><div class="assess-desc">Accountability chains, bias in design, environmental cost, digital rights for builders</div></div><div class="assess-when">Week 20 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Mid-Year Test</span><div><div class="assess-name">Units 1–4 Comprehensive</div><div class="assess-desc">Chain prompt design task, vibe coding concepts, AI for learning, ethics accountability</div></div><div class="assess-when">Week 22 · 45 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Final Assessment</span><div><div class="assess-name">Full Programme Assessment</div><div class="assess-desc">Systems thinking, AI concepts, chain prompt with flowchart, ethics accountability scenario</div></div><div class="assess-when">Week 28 · 40 min</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">Portfolio &amp; Showcase Artefacts</div>
+        <div class="assess-card"><span class="assess-type type-port">Portfolio</span><div><div class="assess-name">Prompt Chain Portfolio</div><div class="assess-desc">Documented prompt chains with flowcharts, peer evaluations, stated goal per chain</div></div><div class="assess-when">Week 22</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Showcase</span><div><div class="assess-name">Mini-Project — Live Panel</div><div class="assess-desc">Problem statement, Lovable prototype, 5-min team presentation, Q&amp;A with external panellist</div></div><div class="assess-when">Week 26</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Portfolio</span><div><div class="assess-name">Build Portfolio</div><div class="assess-desc">Best prompt chain, school-useful app, Mini-Project documentation, 1-page reflection</div></div><div class="assess-when">Week 28</div></div>
+        <div class="credential-box">
+          <div class="cred-icon">🏅</div>
+          <div><div class="cred-title">Campuslogix AI Aspire — Grade 8 Badge</div><div class="cred-sub">Third of four stackable badges · Build Portfolio and Mini-Project documentation carry forward into the Grade 9 Capstone</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 19 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 20 — GRADE 9: EVALUATE & CREATE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-20">
+  <div class="top-bar">
+    <div class="top-bar-label">The Curriculum</div>
+    <div class="top-bar-title">Grade 9 — Year Four of Four</div>
+  </div>
+  <div class="grade-bar">
+    <div class="grade-bar-left">
+      <div class="grade-label-big">Grade 9</div>
+      <div class="grade-theme-badge g9-badge">EVALUATE &amp; CREATE</div>
+      <div class="grade-question">"How do I think critically about AI and build with it?"</div>
+    </div>
+    <div class="grade-bar-right">
+      <div class="grade-meta-item"><div class="grade-meta-val">28</div><div class="grade-meta-label">Sessions</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">~42 hrs</div><div class="grade-meta-label">Total</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Jun – Dec</div><div class="grade-meta-label">Schedule</div></div>
+      <div class="grade-meta-item"><div class="grade-meta-val">Age 14–15</div><div class="grade-meta-label">Students</div></div>
+    </div>
+  </div>
+  <div class="tab-strip" id="tabs-20">
+    <button class="tab-btn active" data-tab="t20-overview">Overview</button>
+    <button class="tab-btn" data-tab="t20-units">Units</button>
+    <button class="tab-btn" data-tab="t20-tools">Tools</button>
+    <button class="tab-btn" data-tab="t20-assessment">Assessment</button>
+  </div>
+  <div class="tab-panels">
+
+    <!-- OVERVIEW -->
+    <div class="tab-panel active" id="t20-overview">
+      <div class="tp-col" style="justify-content:center;">
+        <div class="tp-section-label">Year Theme</div>
+        <div class="overview-headline">Students are treated as junior practitioners. The Capstone is the programme's final word.</div>
+        <div class="overview-body g9-overview-body">
+          Grade 9 is the payoff for four years of compounded capability. Sessions are Socratic and self-directed. The <strong>individual Capstone Project</strong> — a multi-modal, vibe-coded, panel-presented product — is the evidence that earns the AI Foundation Certificate. Every tool, every skill, every year converges here.
+        </div>
+      </div>
+      <div class="tp-col tp-col-right" style="justify-content:center;">
+        <div class="tp-section-label">Exit Competencies — Grade 9 (Programme Completion)</div>
+        <div class="exit-preview">
+          <div class="exit-preview-label">A student leaving Grade 9 can —</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Design and deploy system prompts, few-shot prompts, and meta-prompts — and evaluate prompt quality with practitioner rigour</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Build and present a multi-modal AI project: vibe-coded app, AI voice, AI video, AI research base — from problem definition to live panel</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Conduct a full ethical review of any AI product brief — harms, failure modes, accountability gaps, and designed safeguards</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Steel-man the strongest opposing view on any AI and society question before stating and defending their own position</div>
+          <div class="exit-preview-item"><div class="exit-dot"></div>Articulate the societal implications of AI automation, regulation, and environmental cost — with specific Indian context</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNITS -->
+    <div class="tab-panel" id="t20-units">
+      <div class="tp-col">
+        <div class="tp-section-label">Four Units + Capstone · June to December</div>
+        <div class="month-marker g9-month">June</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">1</div><div><div class="unit-name">Prompt Engineering L3: Systems &amp; Meta-Prompting</div><div class="unit-pillar">Pillar 3 · 4 sessions</div></div></div>
+          <div class="unit-desc">System prompts — persistent behaviour design. Few-shot prompting — teaching AI by example. Meta-prompting — ask AI to critique your own prompts. Prompt Audit of Grade 7–8 work. Quiz 1. <strong>LR applied:</strong> meta-cognition — evaluating the quality of one's own reasoning process.</div>
+        </div>
+        <div class="month-marker g9-month">July</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">2</div><div><div class="unit-name">Creative AI Toolkit</div><div class="unit-pillar">Pillars 3 + 4 · 4 sessions</div></div></div>
+          <div class="unit-desc">Voice landscape demo → ElevenLabs student projects. Video landscape demo → Canva Video AI storyboarding. 2-minute multimodal explainer combining three tools. Quiz 2.</div>
+        </div>
+        <div class="month-marker g9-month">August</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">3</div><div><div class="unit-name">Advanced Vibe Coding on Lovable Free</div><div class="unit-pillar">Pillar 4 · 4 sessions</div></div></div>
+          <div class="unit-desc">Free tier discipline — all prompts drafted on paper first, Bolt for experiments, Lovable for builds. Multi-page apps. Conditional logic. AI feature integration as standard expectation, not stretch. Hugging Face Spaces — awareness demo. <strong>LR applied:</strong> constraint-based reasoning — 5 messages/day forces deliberate, structured planning.</div>
+        </div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">&nbsp;</div>
+        <div class="month-marker g9-month">September</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">4</div><div><div class="unit-name">AI and Society + Ethics: Design Responsible AI</div><div class="unit-pillar">Pillars 2 + 5 · 4 sessions</div></div></div>
+          <div class="unit-desc">Automation and employment. Environmental and social cost of AI. Responsible AI frameworks (EU Act, Anthropic, Google). 5-question ethical review tool. Capstone ethical review submitted. Quiz 3. <strong>LR applied:</strong> steel-manning — argue the strongest opposing case before stating your own position. Moral reasoning frameworks applied to AI scenarios.</div>
+        </div>
+        <div class="month-marker g9-month">October – December</div>
+        <div class="unit-card">
+          <div class="unit-header"><div class="unit-num">★</div><div><div class="unit-name">Capstone Project — Individual</div><div class="unit-pillar">All Pillars · 10 sessions</div></div></div>
+          <div class="unit-desc">Oct: Define problem · Design architecture · Build Prompt Toolkit · Peer critique and design approval. Nov: Build app on Lovable · Add ElevenLabs audio · Add Canva video · User testing · Presentation prep + rehearsal. Dec: Live panel (7 min + 5 min Q&amp;A). AI Foundation Certificate awarded.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="tab-panel" id="t20-tools">
+      <div class="tp-col">
+        <div class="tp-section-label">New Tools This Year</div>
+        <div class="tool-row"><div class="tool-icon">🎙️</div><div><div class="tool-name">ElevenLabs</div><div class="tool-use">AI voice generation — 10,000 free characters/month. Students write scripts as the prompt; voice quality is determined by precision of the writing.</div></div><div class="tool-when">W5 landscape demo<br>W6 student use</div></div>
+        <div class="tool-row"><div class="tool-icon">🎬</div><div><div class="tool-name">Canva Video AI</div><div class="tool-use">Text-to-video and image-to-video on the free education tier. Integrated with Canva — no new accounts. Storyboard on paper before opening.</div></div><div class="tool-when">W7 landscape demo<br>W8 student use</div></div>
+        <div class="tool-row"><div class="tool-icon">🧬</div><div><div class="tool-name">Hugging Face Spaces</div><div class="tool-use">Teacher demo only — no student accounts. Explore the AI model landscape beyond consumer tools. Understand what models exist and what they do.</div></div><div class="tool-when">W10 · Demo only</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">Tool Landscape Demos This Year</div>
+        <div class="tool-note" style="background:rgba(26,26,230,0.04);border:1px solid rgba(26,26,230,0.14);">
+          <strong>Voice Landscape (Week 5):</strong> ElevenLabs · Murf AI · Suno · NotebookLM Audio.
+          Same 100-word script in each. Students observe quality, style, and use case differences.
+          Tool Choice Log updated.
+        </div>
+        <div class="tool-note" style="background:rgba(26,26,230,0.04);border:1px solid rgba(26,26,230,0.14);">
+          <strong>Video Landscape (Week 7):</strong> Canva Video AI · Runway ML · Pika · Kling.
+          Same text prompt in each — 15-second output compared on screen.
+          Tool Choice Log updated.
+        </div>
+        <div class="tp-section-label">Continuing Tools</div>
+        <div class="tool-note" style="background:rgba(51,51,204,0.04);border:1px solid rgba(51,51,204,0.12);">
+          ChatGPT Edu · Claude · Perplexity · NotebookLM · Canva AI · Lovable · Bolt.new —
+          all continuing from Grade 8. <strong>The Capstone requires all of them</strong> to be deployed together
+          in one coherent multi-modal project.
+        </div>
+        <div class="tp-section-label">The Tool Choice Log — Final Submission</div>
+        <div class="tool-note" style="background:rgba(160,160,245,0.07);border:1px solid rgba(160,160,245,0.2);">
+          Maintained since Grade 7, the Tool Choice Log is submitted as part of the <strong>Capstone Design Package</strong> in October.
+          It records every tool category, the primary tool chosen, and the student's documented justification.
+          By Grade 9 it spans three years of deliberate tool decisions.
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="tab-panel" id="t20-assessment">
+      <div class="tp-col">
+        <div class="tp-section-label">Assessments This Year</div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 1</span><div><div class="assess-name">Prompt Engineering L3</div><div class="assess-desc">System prompts, few-shot prompting, meta-prompting, prompt audit methodology</div></div><div class="assess-when">Week 4 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 2</span><div><div class="assess-name">Creative AI Toolkit</div><div class="assess-desc">Voice generation, video generation, multimodal workflow design, creative decision justification</div></div><div class="assess-when">Week 8 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-quiz">Quiz 3</span><div><div class="assess-name">AI and Society + Ethics</div><div class="assess-desc">Automation and employment, AI regulation approaches, responsible AI frameworks, ethical review methodology</div></div><div class="assess-when">Week 16 · 20 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Mid-Year Test</span><div><div class="assess-name">Units 1–4 Comprehensive</div><div class="assess-desc">System prompt design, AI and society steel-man argument, ethical review scenario, meta-prompting evaluation</div></div><div class="assess-when">Week 22 · 40 min</div></div>
+        <div class="assess-card"><span class="assess-type type-test">Final Assessment</span><div><div class="assess-name">Thinking Quality Assessment</div><div class="assess-desc">System prompt task, AI and society argument with steel-man, ethical review with accountability chain, meta-prompting evaluation</div></div><div class="assess-when">Week 28 · 40 min</div></div>
+      </div>
+      <div class="tp-col tp-col-right">
+        <div class="tp-section-label">Capstone Artefacts</div>
+        <div class="assess-card"><span class="assess-type type-port">Artefact</span><div><div class="assess-name">Prompt Toolkit</div><div class="assess-desc">8+ reusable prompts across all Capstone tools — Lovable, ElevenLabs, Canva, NotebookLM — with usage notes</div></div><div class="assess-when">Week 20</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Artefact</span><div><div class="assess-name">Tool Choice Log</div><div class="assess-desc">Three-year record of tool category landscapes, primary tools chosen, and documented justifications</div></div><div class="assess-when">Week 20</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Artefact</span><div><div class="assess-name">Capstone Design Package</div><div class="assess-desc">Problem statement, solution architecture, ethical review, Prompt Toolkit — approved before build begins</div></div><div class="assess-when">Week 20</div></div>
+        <div class="assess-card"><span class="assess-type type-port">Showcase</span><div><div class="assess-name">Capstone Project — Live Panel</div><div class="assess-desc">App + ElevenLabs audio + Canva video + NotebookLM research + deck — 7 min presentation + 5 min Q&amp;A</div></div><div class="assess-when">Week 27</div></div>
+        <div class="credential-box">
+          <div class="cred-icon">🎓</div>
+          <div><div class="cred-title">Campuslogix AI Foundation Certificate</div><div class="cred-sub">Awarded on completion of all four grades · The programme's culminating credential · Ceremony recommended · December</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 20 / 32</div>
+</div>
+
+
+</div><!-- /deck -->
+
+<!-- ── NAV ── -->
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up arrow-light" id="btn-up" disabled>&#8593;</button>
+<button class="nav-arrow down arrow-light" id="btn-down">&#8595;</button>
+
+<script>
+// ── SLIDE NAV ──
+const slides  = Array.from(document.querySelectorAll('.slide'));
+const dotsEl  = document.getElementById('dots');
+const btnUp   = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+let current   = 0;
+
+const slideThemes = ['light', 'dark', 'dark', 'dark', 'dark']; // 0=slide16(dark bg), 1=slide17(white bg)
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'nav-dot ' + (i === 0 ? 'light active' : 'light');
+  d.setAttribute('aria-label', 'Slide ' + (i + 1));
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+function updateArrows(idx) {
+  const theme = slideThemes[idx];
+  [btnUp, btnDown].forEach(btn => {
+    btn.className = btn.className.replace(/arrow-\w+/, '') + ' arrow-' + (theme === 'dark' ? 'light' : 'dark');
+  });
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  const leaving = slides[current];
+  leaving.classList.remove('active');
+  leaving.classList.add('prev');
+  setTimeout(() => leaving.classList.remove('prev'), 500);
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnUp.disabled   = current === 0;
+  btnDown.disabled = current === slides.length - 1;
+  updateArrows(current);
+}
+
+btnUp.addEventListener('click',   () => goTo(current - 1));
+btnDown.addEventListener('click', () => goTo(current + 1));
+document.addEventListener('keydown', e => {
+  if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (['ArrowUp','ArrowLeft'].includes(e.key))         { e.preventDefault(); goTo(current - 1); }
+});
+let ty = 0;
+document.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) { dy < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+
+// ── TAB NAV ──
+document.querySelectorAll('.tab-strip').forEach(strip => {
+  strip.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      strip.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.tab;
+      const panels = btn.closest('.slide').querySelectorAll('.tab-panel');
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById(target).classList.add('active');
+    });
+  });
+});
+</script>
+</body>
+</html>

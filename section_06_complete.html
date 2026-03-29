@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 6: Assessment & Credentialing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.light { background: rgba(255,255,255,0.25); }
+.nav-dot.dark  { background: rgba(28,28,46,0.18); }
+.nav-dot.active.light { background: var(--periwinkle); transform: scale(1.3); }
+.nav-dot.active.dark  { background: var(--deep-blue); transform: scale(1.3); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
+  width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px); border-radius: 50%;
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s; backdrop-filter: blur(4px);
+}
+.nav-arrow.light { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+.nav-arrow.dark  { border: 1px solid rgba(26,26,230,0.2); background: rgba(26,26,230,0.06); color: var(--mid-grey); }
+.nav-arrow.light:hover { background: rgba(123,123,232,0.2); border-color: rgba(123,123,232,0.4); color: var(--white); }
+.nav-arrow.dark:hover  { background: rgba(26,26,230,0.12); border-color: rgba(26,26,230,0.4); color: var(--deep-blue); }
+.nav-arrow.up   { top: clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; z-index: 10;
+}
+.badge-light { color: rgba(255,255,255,0.15); }
+.badge-dark  { color: rgba(28,28,46,0.22); }
+
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 24 — SECTION BREAKER
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-24 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: clamp(60px,8vw,120px);
+}
+#slide-24::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+.s24-bg-num {
+  position: absolute; right: clamp(40px,6vw,80px); top: 50%; transform: translateY(-50%);
+  font-size: clamp(200px,28vw,360px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em; pointer-events: none; user-select: none;
+}
+.s24-accent-line {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, transparent, var(--periwinkle) 40%, var(--deep-blue) 70%, transparent);
+}
+
+/* Four ascending assessment layer blocks — bottom right */
+.s24-layers {
+  position: absolute; right: clamp(80px,10vw,160px); bottom: clamp(48px,6vw,96px);
+  display: flex; align-items: flex-end; gap: clamp(6px,0.8vw,12px); pointer-events: none;
+}
+.s24-layer {
+  border-radius: 6px 6px 3px 3px;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 6px;
+  width: clamp(48px,5.5vw,72px);
+}
+.s24-layer-label {
+  font-size: clamp(7px,0.7vw,8px); font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg);
+  color: rgba(255,255,255,0.35);
+}
+.s24-layer:nth-child(1) { height: clamp(36px,5vh,56px);  background: rgba(160,160,245,0.2); }
+.s24-layer:nth-child(2) { height: clamp(56px,8vh,84px);  background: rgba(123,123,232,0.28); }
+.s24-layer:nth-child(3) { height: clamp(80px,12vh,120px); background: rgba(51,51,204,0.36); }
+.s24-layer:nth-child(4) { height: clamp(108px,16vh,160px); background: rgba(26,26,230,0.45); }
+
+.s24-content { position: relative; z-index: 2; }
+.s24-kicker {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s24-kicker::before { content: ''; display: block; width: 40px; height: 2px; background: var(--periwinkle); }
+.s24-title {
+  font-size: clamp(44px,7.5vw,112px); font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.04em; color: var(--white); margin-bottom: clamp(24px,3vw,44px);
+}
+.s24-title .accent { color: var(--pale-blue); }
+.s24-desc {
+  font-size: clamp(14px,1.5vw,20px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.65; max-width: 560px;
+}
+.s24-desc strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 25 — ASSESSMENT PHILOSOPHY
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-25 {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+}
+#slide-25::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.05) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s25-body {
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS */
+.s25-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(32px,4vw,52px) clamp(40px,5vw,68px) clamp(44px,5.5vw,60px);
+  border-right: 1px solid rgba(26,26,230,0.08); position: relative; overflow: hidden;
+}
+.s25-bg-word {
+  position: absolute; bottom: -30px; left: -20px;
+  font-size: clamp(80px,11vw,140px); font-weight: 800; line-height: 1;
+  color: rgba(26,26,230,0.04); letter-spacing: -0.04em; pointer-events: none; user-select: none;
+}
+.s25-inner { position: relative; z-index: 1; }
+.s25-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(14px,1.8vw,24px);
+}
+.s25-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--deep-blue); }
+.s25-headline {
+  font-size: clamp(22px,3vw,42px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--dark-navy); margin-bottom: clamp(12px,1.5vw,20px);
+}
+.s25-headline .accent { color: var(--deep-blue); }
+.s25-body-text {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; border-left: 3px solid rgba(26,26,230,0.2); padding-left: 14px;
+  margin-bottom: clamp(18px,2.2vw,32px);
+}
+.s25-body-text strong { color: var(--dark-navy); font-weight: 700; }
+
+/* Three principle cards */
+.s25-principles { display: flex; flex-direction: column; gap: clamp(8px,1vw,13px); }
+.s25-principle {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: clamp(10px,1.2vw,15px) clamp(14px,1.6vw,20px);
+  border-radius: 10px; background: rgba(26,26,230,0.04); border: 1px solid rgba(26,26,230,0.1);
+}
+.s25-p-icon { font-size: clamp(16px,1.6vw,20px); flex-shrink: 0; margin-top: 1px; }
+.s25-p-title { font-size: clamp(12px,1.15vw,15px); font-weight: 700; color: var(--dark-navy); margin-bottom: 3px; }
+.s25-p-sub   { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); line-height: 1.5; }
+
+/* RHS — assessment grid per grade */
+.s25-right {
+  background: var(--off-white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(28px,3.5vw,48px) clamp(36px,4.5vw,60px) clamp(44px,5.5vw,56px);
+  gap: clamp(8px,1vw,14px);
+}
+.s25-right-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+}
+
+/* Grade assessment row */
+.assess-row {
+  display: grid; grid-template-columns: clamp(56px,6vw,76px) 1fr;
+  gap: clamp(10px,1.2vw,16px); align-items: center;
+}
+.ar-grade {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: clamp(8px,1vw,13px) 6px; border-radius: 10px; text-align: center; gap: 2px;
+}
+.ar-grade-num { font-size: clamp(16px,1.8vw,22px); font-weight: 800; line-height: 1; }
+.ar-grade-label { font-size: clamp(8px,0.75vw,9px); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.ar-grade-theme { font-size: clamp(7px,0.7vw,8px); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.7; }
+
+.ar-grade-6 { background: rgba(160,160,245,0.12); border: 1px solid rgba(160,160,245,0.25); color: #5555BB; }
+.ar-grade-7 { background: rgba(123,123,232,0.12); border: 1px solid rgba(123,123,232,0.25); color: #4444AA; }
+.ar-grade-8 { background: rgba(51,51,204,0.12);   border: 1px solid rgba(51,51,204,0.25);   color: #3333AA; }
+.ar-grade-9 { background: rgba(26,26,230,0.12);   border: 1px solid rgba(26,26,230,0.28);   color: var(--deep-blue); }
+
+.ar-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.ar-tag {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 600; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 100px;
+}
+.tag-quiz  { background: rgba(123,123,232,0.1); color: #4444BB; border: 1px solid rgba(123,123,232,0.2); }
+.tag-test  { background: rgba(26,26,230,0.1);   color: var(--deep-blue); border: 1px solid rgba(26,26,230,0.2); }
+.tag-port  { background: rgba(51,51,204,0.08);  color: var(--mid-blue); border: 1px solid rgba(51,51,204,0.18); }
+.tag-show  { background: rgba(28,28,46,0.08);   color: var(--dark-navy); border: 1px solid rgba(28,28,46,0.15); }
+
+.ar-divider { height: 1px; background: rgba(26,26,230,0.07); grid-column: 1 / -1; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 26 — THE CREDENTIAL PATHWAY
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-26 {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+}
+#slide-26::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.05) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s26-body {
+  display: grid; grid-template-columns: 1fr 1.4fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS */
+.s26-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(32px,4vw,52px) clamp(40px,5vw,68px) clamp(44px,5.5vw,60px);
+  border-right: 1px solid rgba(26,26,230,0.08); position: relative; overflow: hidden;
+}
+.s26-bg-word {
+  position: absolute; bottom: -30px; left: -20px;
+  font-size: clamp(80px,11vw,140px); font-weight: 800; line-height: 1;
+  color: rgba(26,26,230,0.04); letter-spacing: -0.04em; pointer-events: none; user-select: none;
+}
+.s26-inner { position: relative; z-index: 1; }
+.s26-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(14px,1.8vw,24px);
+}
+.s26-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--deep-blue); }
+.s26-headline {
+  font-size: clamp(22px,3vw,42px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--dark-navy); margin-bottom: clamp(12px,1.5vw,20px);
+}
+.s26-headline .accent { color: var(--deep-blue); }
+.s26-body-text {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; border-left: 3px solid rgba(26,26,230,0.2); padding-left: 14px;
+  margin-bottom: clamp(18px,2.2vw,32px);
+}
+.s26-body-text strong { color: var(--dark-navy); font-weight: 700; }
+
+/* What the certificate represents */
+.s26-cert-box {
+  padding: clamp(14px,1.6vw,20px) clamp(16px,1.8vw,24px);
+  border-radius: 12px; border: 2px solid rgba(26,26,230,0.2);
+  background: rgba(26,26,230,0.04);
+}
+.s26-cert-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.s26-cert-icon { font-size: clamp(22px,2.4vw,30px); flex-shrink: 0; }
+.s26-cert-name { font-size: clamp(13px,1.3vw,17px); font-weight: 800; color: var(--dark-navy); }
+.s26-cert-body { font-size: clamp(11px,1.05vw,13px); font-weight: 400; color: var(--mid-grey); line-height: 1.6; }
+.s26-cert-body strong { color: var(--dark-navy); font-weight: 700; }
+
+/* RHS — credential pathway */
+.s26-right {
+  background: var(--off-white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(28px,3.5vw,48px) clamp(44px,5.5vw,68px) clamp(44px,5.5vw,56px);
+  gap: clamp(6px,0.7vw,10px);
+}
+.s26-right-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey); margin-bottom: clamp(4px,0.5vw,8px);
+}
+
+/* Badge cards — four grades + certificate */
+.badge-card {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: clamp(12px,1.4vw,20px);
+  padding: clamp(12px,1.4vw,18px) clamp(16px,1.8vw,24px);
+  border-radius: 12px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.08);
+  transition: border-color 0.2s;
+}
+.badge-card:hover { border-color: rgba(26,26,230,0.2); }
+
+.bc-badge {
+  width: clamp(36px,3.8vw,50px); height: clamp(36px,3.8vw,50px);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(14px,1.4vw,18px); flex-shrink: 0; font-weight: 800;
+}
+.bc-g6 { background: rgba(160,160,245,0.15); border: 2px solid rgba(160,160,245,0.4); color: #5555AA; }
+.bc-g7 { background: rgba(123,123,232,0.15); border: 2px solid rgba(123,123,232,0.4); color: #4444AA; }
+.bc-g8 { background: rgba(51,51,204,0.15);   border: 2px solid rgba(51,51,204,0.4);   color: #3333AA; }
+.bc-g9 { background: rgba(26,26,230,0.15);   border: 2px solid rgba(26,26,230,0.4);   color: var(--deep-blue); }
+.bc-cert { background: var(--dark-navy); border: 2px solid var(--dark-navy); }
+
+.bc-info {}
+.bc-title { font-size: clamp(12px,1.2vw,15px); font-weight: 800; color: var(--dark-navy); margin-bottom: 4px; }
+.bc-reqs  { display: flex; flex-wrap: wrap; gap: 4px; }
+.bc-req {
+  font-size: clamp(8px,0.78vw,10px); font-weight: 600; letter-spacing: 0.04em;
+  padding: 2px 8px; border-radius: 100px; color: var(--mid-grey);
+  background: rgba(26,26,230,0.06); border: 1px solid rgba(26,26,230,0.1);
+}
+
+.bc-check {
+  font-size: clamp(13px,1.3vw,17px); color: rgba(26,26,230,0.3); flex-shrink: 0;
+}
+
+/* Arrow connector between badge cards */
+.badge-connector {
+  display: flex; justify-content: flex-start; align-items: center;
+  padding-left: calc(clamp(36px,3.8vw,50px)/2 + clamp(16px,1.8vw,24px) - 6px);
+}
+.badge-connector-line {
+  width: 2px; height: clamp(8px,0.9vw,12px);
+  background: linear-gradient(to bottom, rgba(26,26,230,0.2), rgba(26,26,230,0.35));
+  border-radius: 1px;
+}
+
+/* Certificate card — special treatment */
+.cert-card {
+  display: grid; grid-template-columns: auto 1fr;
+  align-items: center; gap: clamp(12px,1.4vw,20px);
+  padding: clamp(14px,1.6vw,20px) clamp(16px,1.8vw,24px);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(26,26,230,0.08) 0%, rgba(26,26,230,0.03) 100%);
+  border: 2px solid rgba(26,26,230,0.25);
+}
+.cert-icon-wrap {
+  width: clamp(40px,4.2vw,54px); height: clamp(40px,4.2vw,54px);
+  border-radius: 50%; background: var(--dark-navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px,1.6vw,22px); flex-shrink: 0;
+}
+.cert-card-title { font-size: clamp(13px,1.3vw,17px); font-weight: 800; color: var(--dark-navy); margin-bottom: 4px; }
+.cert-card-sub   { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--mid-grey); line-height: 1.5; }
+.cert-card-sub strong { color: var(--deep-blue); font-weight: 700; }
+
+</style>
+</head>
+<body>
+<div class="deck">
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 24 — SECTION BREAKER
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-24">
+  <div class="s24-accent-line"></div>
+  <div class="s24-bg-num">06</div>
+
+  <div class="s24-layers">
+    <div class="s24-layer"><div class="s24-layer-label">Quiz</div></div>
+    <div class="s24-layer"><div class="s24-layer-label">Test</div></div>
+    <div class="s24-layer"><div class="s24-layer-label">Portfolio</div></div>
+    <div class="s24-layer"><div class="s24-layer-label">Showcase</div></div>
+  </div>
+
+  <div class="s24-content">
+    <div class="s24-kicker">Section Six</div>
+    <div class="s24-title">Assessment<br>&amp; <span class="accent">Credentialing</span></div>
+    <p class="s24-desc">
+      Assessment in this programme is not an event.
+      It is a <strong>continuous, compounding record of capability</strong> —
+      built through quizzes, tests, live presentations, and portfolio
+      artefacts across four years.
+    </p>
+  </div>
+
+  <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 24 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 25 — ASSESSMENT PHILOSOPHY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-25">
+  <div class="top-bar">
+    <div class="top-bar-label">Assessment</div>
+    <div class="top-bar-title">Low Stakes, High Frequency — The Assessment Architecture</div>
+  </div>
+  <div class="s25-body">
+
+    <div class="s25-left">
+      <div class="s25-bg-word">EVIDENCE</div>
+      <div class="s25-inner">
+        <div class="s25-eyebrow">The Governing Idea</div>
+        <h2 class="s25-headline">
+          A record of<br>capability —<br>not a <span class="accent">judgement.</span>
+        </h2>
+        <p class="s25-body-text">
+          Every assessment in this programme is designed to
+          <strong>surface what students can do</strong> — not catch them
+          out. Quizzes are short and frequent. Portfolios show growth over time.
+          The live showcase is the moment everything is demonstrated publicly.
+        </p>
+        <div class="s25-principles">
+          <div class="s25-principle">
+            <div class="s25-p-icon">📈</div>
+            <div>
+              <div class="s25-p-title">Low stakes, high frequency</div>
+              <div class="s25-p-sub">3 quizzes per year — 15–20 minutes each. No grade anxiety. Just regular calibration.</div>
+            </div>
+          </div>
+          <div class="s25-principle">
+            <div class="s25-p-icon">📁</div>
+            <div>
+              <div class="s25-p-title">Portfolio carries equal weight</div>
+              <div class="s25-p-sub">Artefacts — journals, prompt portfolios, research reports, build logs — are assessed alongside written tests.</div>
+            </div>
+          </div>
+          <div class="s25-principle">
+            <div class="s25-p-icon">🎤</div>
+            <div>
+              <div class="s25-p-title">Live defence from Grade 7</div>
+              <div class="s25-p-sub">Grade 7 AI Report · Grade 8 Mini-Project panel · Grade 9 Capstone panel with external guest.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s25-right">
+      <div class="s25-right-label">Assessment Map — Across Four Grades</div>
+
+      <div class="assess-row">
+        <div class="ar-grade ar-grade-6">
+          <div class="ar-grade-num">G6</div>
+          <div class="ar-grade-theme">DISCOVER</div>
+        </div>
+        <div class="ar-tags">
+          <span class="ar-tag tag-quiz">Quiz ×3</span>
+          <span class="ar-tag tag-test">Mid-Year Test</span>
+          <span class="ar-tag tag-test">Final Assessment</span>
+          <span class="ar-tag tag-port">Prompt Portfolio</span>
+          <span class="ar-tag tag-port">AI Discovery Journal</span>
+          <span class="ar-tag tag-show">Class Showcase</span>
+        </div>
+      </div>
+      <div class="ar-divider"></div>
+
+      <div class="assess-row">
+        <div class="ar-grade ar-grade-7">
+          <div class="ar-grade-num">G7</div>
+          <div class="ar-grade-theme">UNDERSTAND</div>
+        </div>
+        <div class="ar-tags">
+          <span class="ar-tag tag-quiz">Quiz ×3</span>
+          <span class="ar-tag tag-test">Mid-Year Test</span>
+          <span class="ar-tag tag-test">Final Assessment</span>
+          <span class="ar-tag tag-port">Prompt Portfolio</span>
+          <span class="ar-tag tag-port">AI Research Portfolio</span>
+          <span class="ar-tag tag-show">AI Report — Live 5 min</span>
+        </div>
+      </div>
+      <div class="ar-divider"></div>
+
+      <div class="assess-row">
+        <div class="ar-grade ar-grade-8">
+          <div class="ar-grade-num">G8</div>
+          <div class="ar-grade-theme">APPLY</div>
+        </div>
+        <div class="ar-tags">
+          <span class="ar-tag tag-quiz">Quiz ×3</span>
+          <span class="ar-tag tag-test">Mid-Year Test</span>
+          <span class="ar-tag tag-test">Final Assessment</span>
+          <span class="ar-tag tag-port">Prompt Chain Portfolio</span>
+          <span class="ar-tag tag-port">Build Portfolio</span>
+          <span class="ar-tag tag-show">Mini-Project Panel</span>
+        </div>
+      </div>
+      <div class="ar-divider"></div>
+
+      <div class="assess-row">
+        <div class="ar-grade ar-grade-9">
+          <div class="ar-grade-num">G9</div>
+          <div class="ar-grade-theme">EVALUATE</div>
+        </div>
+        <div class="ar-tags">
+          <span class="ar-tag tag-quiz">Quiz ×3</span>
+          <span class="ar-tag tag-test">Mid-Year Test</span>
+          <span class="ar-tag tag-test">Final Assessment</span>
+          <span class="ar-tag tag-port">Prompt Toolkit</span>
+          <span class="ar-tag tag-port">Tool Choice Log</span>
+          <span class="ar-tag tag-port">Capstone Design Package</span>
+          <span class="ar-tag tag-show">Capstone Panel — 7 min + Q&A</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 25 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 26 — THE CREDENTIAL PATHWAY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-26">
+  <div class="top-bar">
+    <div class="top-bar-label">Credentialing</div>
+    <div class="top-bar-title">The Credential Pathway — Four Badges, One Certificate</div>
+  </div>
+  <div class="s26-body">
+
+    <div class="s26-left">
+      <div class="s26-bg-word">EARNED</div>
+      <div class="s26-inner">
+        <div class="s26-eyebrow">The Credential Model</div>
+        <h2 class="s26-headline">
+          One badge<br>per year.<br>One certificate<br>to <span class="accent">close it.</span>
+        </h2>
+        <p class="s26-body-text">
+          Students earn a <strong>stackable Campuslogix AI Aspire badge</strong>
+          at the end of each grade — evidence that year's capabilities are in place.
+          All four badges together, plus the Capstone, earn the
+          AI Foundation Certificate.
+        </p>
+        <div class="s26-cert-box">
+          <div class="s26-cert-top">
+            <div class="s26-cert-icon">🎓</div>
+            <div class="s26-cert-name">Campuslogix AI Foundation Certificate</div>
+          </div>
+          <div class="s26-cert-body">
+            Awarded on <strong>completion of all four grades</strong> and successful
+            presentation of the Grade 9 Capstone to a live panel.
+            The credential is evidence of <strong>four years of compounded,
+            demonstrated capability</strong> — not a course completion.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s26-right">
+      <div class="s26-right-label">What Each Badge Requires</div>
+
+      <div class="badge-card">
+        <div class="bc-badge bc-g6">G6</div>
+        <div class="bc-info">
+          <div class="bc-title">Grade 6 Badge — Discover</div>
+          <div class="bc-reqs">
+            <span class="bc-req">AI Discovery Journal</span>
+            <span class="bc-req">Prompt Portfolio</span>
+            <span class="bc-req">Final Assessment</span>
+            <span class="bc-req">Class Showcase</span>
+          </div>
+        </div>
+        <div class="bc-check">→</div>
+      </div>
+
+      <div class="badge-connector"><div class="badge-connector-line"></div></div>
+
+      <div class="badge-card">
+        <div class="bc-badge bc-g7">G7</div>
+        <div class="bc-info">
+          <div class="bc-title">Grade 7 Badge — Understand</div>
+          <div class="bc-reqs">
+            <span class="bc-req">AI Research Portfolio</span>
+            <span class="bc-req">AI Report — Live</span>
+            <span class="bc-req">Final Assessment</span>
+          </div>
+        </div>
+        <div class="bc-check">→</div>
+      </div>
+
+      <div class="badge-connector"><div class="badge-connector-line"></div></div>
+
+      <div class="badge-card">
+        <div class="bc-badge bc-g8">G8</div>
+        <div class="bc-info">
+          <div class="bc-title">Grade 8 Badge — Apply</div>
+          <div class="bc-reqs">
+            <span class="bc-req">Build Portfolio</span>
+            <span class="bc-req">Mini-Project Panel</span>
+            <span class="bc-req">Final Assessment</span>
+          </div>
+        </div>
+        <div class="bc-check">→</div>
+      </div>
+
+      <div class="badge-connector"><div class="badge-connector-line"></div></div>
+
+      <div class="badge-card">
+        <div class="bc-badge bc-g9">G9</div>
+        <div class="bc-info">
+          <div class="bc-title">Grade 9 Badge — Evaluate &amp; Create</div>
+          <div class="bc-reqs">
+            <span class="bc-req">Capstone Design Package</span>
+            <span class="bc-req">Capstone Panel</span>
+            <span class="bc-req">Tool Choice Log</span>
+            <span class="bc-req">Final Assessment</span>
+          </div>
+        </div>
+        <div class="bc-check">→</div>
+      </div>
+
+      <div class="badge-connector"><div class="badge-connector-line"></div></div>
+
+      <div class="cert-card">
+        <div class="cert-icon-wrap">🎓</div>
+        <div>
+          <div class="cert-card-title">Campuslogix AI Foundation Certificate</div>
+          <div class="cert-card-sub">All four grades complete · Capstone panel passed · <strong>Awarded December, Grade 9</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 26 / 32</div>
+</div>
+
+
+</div><!-- /deck -->
+
+<!-- ── NAV ── -->
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up light" id="btn-up" disabled>&#8593;</button>
+<button class="nav-arrow down light" id="btn-down">&#8595;</button>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dotsEl  = document.getElementById('dots');
+const btnUp   = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+let current   = 0;
+const themes  = ['light', 'dark', 'dark'];
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'nav-dot ' + themes[i] + (i === 0 ? ' active' : '');
+  d.setAttribute('aria-label', 'Slide ' + (i+1));
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+function setArrows(idx) {
+  [btnUp, btnDown].forEach(b => {
+    b.className = b.className.replace(/\b(light|dark)\b/, themes[idx]);
+  });
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  slides[current].classList.remove('active');
+  slides[current].classList.add('prev');
+  const prev = slides[current];
+  setTimeout(() => prev.classList.remove('prev'), 500);
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnUp.disabled   = current === 0;
+  btnDown.disabled = current === slides.length - 1;
+  setArrows(current);
+}
+
+btnUp.addEventListener('click',   () => goTo(current - 1));
+btnDown.addEventListener('click', () => goTo(current + 1));
+document.addEventListener('keydown', e => {
+  if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (['ArrowUp','ArrowLeft'].includes(e.key))         { e.preventDefault(); goTo(current - 1); }
+});
+let ty = 0;
+document.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) { dy < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+</script>
+</body>
+</html>

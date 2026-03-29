@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 5: Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.light { background: rgba(255,255,255,0.25); }
+.nav-dot.dark  { background: rgba(28,28,46,0.18); }
+.nav-dot.active.light { background: var(--periwinkle); transform: scale(1.3); }
+.nav-dot.active.dark  { background: var(--deep-blue); transform: scale(1.3); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 100;
+  width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px); border-radius: 50%;
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s; backdrop-filter: blur(4px);
+}
+.nav-arrow.light { border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+.nav-arrow.dark  { border: 1px solid rgba(26,26,230,0.2); background: rgba(26,26,230,0.06); color: var(--mid-grey); }
+.nav-arrow.light:hover { background: rgba(123,123,232,0.2); border-color: rgba(123,123,232,0.4); color: var(--white); }
+.nav-arrow.dark:hover  { background: rgba(26,26,230,0.12); border-color: rgba(26,26,230,0.4); color: var(--deep-blue); }
+.nav-arrow.up   { top: clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; z-index: 10;
+}
+.badge-light { color: rgba(255,255,255,0.15); }
+.badge-dark  { color: rgba(28,28,46,0.22); }
+
+/* Shared top bar */
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+/* Dot grid */
+.dot-bg::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 21 — SECTION BREAKER
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-21 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  padding: clamp(60px,8vw,120px);
+}
+#slide-21::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+.s21-bg-num {
+  position: absolute; right: clamp(40px,6vw,80px); top: 50%; transform: translateY(-50%);
+  font-size: clamp(200px,28vw,360px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em; pointer-events: none; user-select: none;
+}
+.s21-accent-line {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, transparent, var(--periwinkle) 40%, var(--deep-blue) 70%, transparent);
+}
+
+/* Tool category icons — decorative, bottom right */
+.s21-icons {
+  position: absolute; right: clamp(80px,10vw,160px); bottom: clamp(48px,6vw,96px);
+  display: flex; align-items: flex-end; gap: clamp(14px,1.8vw,28px); pointer-events: none;
+}
+.s21-icon-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0.2;
+}
+.s21-icon-circle {
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px,1.8vw,24px);
+}
+.s21-icon-wrap:nth-child(1) .s21-icon-circle { width: clamp(36px,4vw,52px); height: clamp(36px,4vw,52px); background: rgba(160,160,245,0.3); }
+.s21-icon-wrap:nth-child(2) .s21-icon-circle { width: clamp(40px,4.5vw,58px); height: clamp(40px,4.5vw,58px); background: rgba(123,123,232,0.3); }
+.s21-icon-wrap:nth-child(3) .s21-icon-circle { width: clamp(44px,5vw,64px); height: clamp(44px,5vw,64px); background: rgba(85,85,204,0.35); }
+.s21-icon-wrap:nth-child(4) .s21-icon-circle { width: clamp(40px,4.5vw,58px); height: clamp(40px,4.5vw,58px); background: rgba(51,51,204,0.35); }
+.s21-icon-wrap:nth-child(5) .s21-icon-circle { width: clamp(36px,4vw,52px); height: clamp(36px,4vw,52px); background: rgba(26,26,230,0.4); }
+.s21-icon-label { font-size: clamp(8px,0.75vw,9px); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-align: center; }
+
+.s21-content { position: relative; z-index: 2; }
+.s21-kicker {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s21-kicker::before { content: ''; display: block; width: 40px; height: 2px; background: var(--periwinkle); }
+.s21-title {
+  font-size: clamp(48px,8vw,120px); font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.04em; color: var(--white); margin-bottom: clamp(24px,3vw,44px);
+}
+.s21-title .accent { color: var(--pale-blue); }
+.s21-desc {
+  font-size: clamp(14px,1.5vw,20px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.65; max-width: 560px;
+}
+.s21-desc strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+.s21-chips {
+  display: flex; gap: clamp(8px,1vw,14px); margin-top: clamp(24px,3vw,44px);
+}
+.s21-chip {
+  padding: clamp(7px,0.8vw,10px) clamp(14px,1.6vw,22px); border-radius: 100px;
+  font-size: clamp(11px,1vw,13px); font-weight: 600; letter-spacing: 0.03em;
+  display: flex; align-items: center; gap: 7px;
+}
+.s21-chip:nth-child(1) { background: rgba(160,160,245,0.1); color: #A0A0F5; border: 1px solid rgba(160,160,245,0.2); }
+.s21-chip:nth-child(2) { background: rgba(123,123,232,0.1); color: #A0A0F5; border: 1px solid rgba(123,123,232,0.2); }
+.s21-chip:nth-child(3) { background: rgba(51,51,204,0.12);  color: #B0B0FF; border: 1px solid rgba(51,51,204,0.22); }
+.s21-chip:nth-child(4) { background: rgba(26,26,230,0.12);  color: #B8B8FF; border: 1px solid rgba(26,26,230,0.24); }
+.s21-chip:nth-child(5) { background: rgba(26,26,230,0.16);  color: var(--pale-blue); border: 1px solid rgba(26,26,230,0.3); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 22 — THE TOOL JOURNEY (MATRIX)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-22 {
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+#slide-22::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.05) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s22-body {
+  flex: 1; display: grid; grid-template-columns: 1fr 2fr;
+  position: relative; z-index: 1; min-height: 0; overflow: hidden;
+}
+
+/* LHS */
+.s22-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(32px,4vw,56px) clamp(36px,4.5vw,60px);
+  border-right: 1px solid rgba(26,26,230,0.08);
+}
+.s22-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(16px,2vw,26px);
+}
+.s22-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--deep-blue); }
+.s22-headline {
+  font-size: clamp(20px,2.8vw,38px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--dark-navy); margin-bottom: clamp(12px,1.5vw,20px);
+}
+.s22-headline .accent { color: var(--deep-blue); }
+.s22-body-text {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; margin-bottom: clamp(20px,2.5vw,32px);
+  border-left: 3px solid rgba(26,26,230,0.2); padding-left: 14px;
+}
+.s22-body-text strong { color: var(--dark-navy); font-weight: 700; }
+
+/* Legend */
+.s22-legend { display: flex; flex-direction: column; gap: 8px; }
+.s22-legend-title {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--light-grey); margin-bottom: 2px;
+}
+.legend-row { display: flex; align-items: center; gap: 10px; }
+.legend-pill {
+  font-size: clamp(8px,0.78vw,9px); font-weight: 700; letter-spacing: 0.04em;
+  padding: 2px 9px; border-radius: 100px; flex-shrink: 0; white-space: nowrap;
+}
+.lp-primary  { background: var(--deep-blue); color: var(--white); }
+.lp-student  { background: rgba(26,26,230,0.1); color: var(--deep-blue); border: 1px solid rgba(26,26,230,0.2); }
+.lp-demo     { background: rgba(136,136,168,0.1); color: var(--light-grey); border: 1px solid rgba(136,136,168,0.2); }
+.lp-cont     { background: rgba(26,26,230,0.06); color: var(--periwinkle); border: 1px solid rgba(26,26,230,0.1); }
+.legend-label { font-size: clamp(10px,0.95vw,12px); color: var(--mid-grey); }
+
+/* RHS — matrix */
+.s22-right {
+  display: flex; flex-direction: column;
+  padding: clamp(16px,2vw,24px) clamp(28px,3.5vw,48px) clamp(44px,5vw,60px);
+  gap: clamp(4px,0.5vw,7px); overflow: hidden;
+}
+
+/* Grade column headers */
+.matrix-headers {
+  display: grid; grid-template-columns: clamp(88px,9.5vw,120px) repeat(4, 1fr);
+  gap: clamp(4px,0.5vw,8px); flex-shrink: 0;
+}
+.mh-spacer { }
+.mh-grade {
+  text-align: center; padding: clamp(6px,0.7vw,10px) 4px;
+  border-radius: 8px; font-size: clamp(11px,1.05vw,13px); font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.mh-grade:nth-child(2) { background: rgba(160,160,245,0.12); color: #5555AA; }
+.mh-grade:nth-child(3) { background: rgba(123,123,232,0.12); color: #4444AA; }
+.mh-grade:nth-child(4) { background: rgba(51,51,204,0.12);  color: #3333AA; }
+.mh-grade:nth-child(5) { background: rgba(26,26,230,0.14);  color: var(--deep-blue); }
+
+/* Matrix rows */
+.matrix-row {
+  display: grid; grid-template-columns: clamp(88px,9.5vw,120px) repeat(4, 1fr);
+  gap: clamp(4px,0.5vw,7px); flex: 1; min-height: 0;
+}
+.mr-label {
+  display: flex; align-items: center;
+  font-size: clamp(8px,0.75vw,9px); font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--mid-grey);
+  padding-right: 6px; line-height: 1.3;
+}
+.mr-label .cat-icon { margin-right: 6px; font-size: clamp(11px,1.1vw,14px); }
+
+.matrix-cell {
+  border-radius: 8px; padding: clamp(5px,0.55vw,7px) clamp(6px,0.65vw,9px);
+  display: flex; flex-direction: row; flex-wrap: wrap; gap: 3px;
+  align-content: center; justify-content: center;
+  min-height: 0;
+  border: 1px solid rgba(26,26,230,0.06); background: rgba(26,26,230,0.02);
+}
+.matrix-cell.empty {
+  background: rgba(0,0,0,0.015); border-color: rgba(0,0,0,0.04);
+}
+
+/* Tool pills inside cells */
+.tp {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: clamp(8px,0.76vw,9px); font-weight: 700; letter-spacing: 0.01em;
+  padding: clamp(2px,0.22vw,3px) clamp(5px,0.6vw,8px); border-radius: 100px;
+  white-space: nowrap;
+}
+/* Depth states */
+.tp-primary { background: var(--deep-blue); color: var(--white); }
+.tp-student { background: rgba(26,26,230,0.12); color: #3333BB; border: 1px solid rgba(26,26,230,0.22); }
+.tp-demo    { background: rgba(136,136,168,0.1); color: var(--light-grey); border: 1px solid rgba(136,136,168,0.18); }
+.tp-cont    { background: rgba(26,26,230,0.06); color: var(--periwinkle); border: 1px solid rgba(26,26,230,0.1); font-style: italic; }
+/* Grade accent for newly introduced tools */
+.tp-g6-new  { background: rgba(160,160,245,0.15); color: #4444AA; border: 1px solid rgba(160,160,245,0.3); }
+.tp-g7-new  { background: rgba(123,123,232,0.12); color: #3333AA; border: 1px solid rgba(123,123,232,0.25); }
+.tp-g8-new  { background: rgba(51,51,204,0.12);   color: #2222AA; border: 1px solid rgba(51,51,204,0.25); }
+.tp-g9-new  { background: rgba(26,26,230,0.14);   color: var(--deep-blue); border: 1px solid rgba(26,26,230,0.28); }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 23 — THE LANDSCAPE APPROACH
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-23 {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+}
+#slide-23::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s23-body {
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS */
+.s23-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(24px,3vw,40px) clamp(40px,5vw,64px) clamp(44px,5.5vw,60px);
+  border-right: 1px solid rgba(26,26,230,0.08);
+  position: relative; overflow: hidden;
+}
+.s23-left-bg {
+  position: absolute; bottom: -20px; left: -10px;
+  font-size: clamp(120px,16vw,200px); font-weight: 800; line-height: 1;
+  color: rgba(26,26,230,0.03); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+.s23-left-inner { position: relative; z-index: 1; }
+.s23-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(16px,2vw,28px);
+}
+.s23-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--deep-blue); }
+.s23-headline {
+  font-size: clamp(22px,3vw,42px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--dark-navy); margin-bottom: clamp(14px,1.8vw,24px);
+}
+.s23-headline .accent { color: var(--deep-blue); }
+.s23-body-text {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.65; margin-bottom: clamp(14px,1.8vw,24px);
+  border-left: 3px solid rgba(26,26,230,0.2); padding-left: 14px;
+}
+.s23-body-text strong { color: var(--dark-navy); font-weight: 700; }
+
+/* Key facts boxes */
+.s23-facts { display: flex; flex-direction: column; gap: clamp(6px,0.7vw,10px); }
+.s23-fact {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: clamp(9px,1vw,13px) clamp(12px,1.4vw,18px);
+  border-radius: 10px; background: rgba(26,26,230,0.04); border: 1px solid rgba(26,26,230,0.1);
+}
+.s23-fact-icon { font-size: clamp(16px,1.6vw,20px); flex-shrink: 0; margin-top: 1px; }
+.s23-fact-title { font-size: clamp(12px,1.15vw,15px); font-weight: 700; color: var(--dark-navy); margin-bottom: 3px; }
+.s23-fact-sub   { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); line-height: 1.5; }
+
+/* RHS */
+.s23-right {
+  background: var(--off-white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(24px,3vw,40px) clamp(40px,5vw,64px) clamp(44px,5.5vw,56px);
+  gap: clamp(10px,1.2vw,18px);
+}
+.s23-right-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+}
+
+/* Step flow */
+.step-flow { display: flex; flex-direction: column; gap: 0; }
+.step-item {
+  display: flex; align-items: flex-start; gap: clamp(14px,1.6vw,22px);
+  position: relative;
+}
+/* Vertical connector between steps */
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(clamp(22px,2.6vw,34px) / 2 - 1px);
+  top: clamp(22px,2.6vw,34px);
+  width: 2px;
+  height: clamp(12px,1.5vw,20px);
+  background: rgba(26,26,230,0.15);
+}
+.step-circle {
+  width: clamp(22px,2.6vw,34px); height: clamp(22px,2.6vw,34px);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(10px,1vw,13px); font-weight: 800; flex-shrink: 0;
+  z-index: 1;
+}
+.step-1 .step-circle { background: rgba(160,160,245,0.2); color: #5555AA; border: 2px solid rgba(160,160,245,0.4); }
+.step-2 .step-circle { background: rgba(51,51,204,0.15); color: var(--mid-blue); border: 2px solid rgba(51,51,204,0.3); }
+.step-3 .step-circle { background: var(--deep-blue); color: var(--white); }
+.step-4 .step-circle { background: var(--dark-navy); color: var(--pale-blue); }
+
+.step-content { padding-bottom: clamp(10px,1.2vw,16px); }
+.step-title { font-size: clamp(13px,1.3vw,17px); font-weight: 800; color: var(--dark-navy); margin-bottom: 4px; }
+.step-desc  { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); line-height: 1.5; }
+
+/* Tool Choice Log highlight */
+.tcl-box {
+  padding: clamp(14px,1.6vw,20px) clamp(16px,1.8vw,24px);
+  border-radius: 12px; border: 1px solid rgba(26,26,230,0.2);
+  background: rgba(26,26,230,0.05);
+}
+.tcl-label { font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--deep-blue); margin-bottom: 8px; }
+.tcl-body  { font-size: clamp(11px,1.05vw,13px); font-weight: 400; color: var(--mid-grey); line-height: 1.6; }
+.tcl-body strong { color: var(--dark-navy); font-weight: 700; }
+.tcl-grades { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.tcl-grade {
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 100px;
+}
+.tcl-grade:nth-child(1) { background: rgba(160,160,245,0.15); color: #5555AA; }
+.tcl-grade:nth-child(2) { background: rgba(123,123,232,0.12); color: #4444AA; }
+.tcl-grade:nth-child(3) { background: rgba(51,51,204,0.12);   color: #3333AA; }
+.tcl-grade:nth-child(4) { background: rgba(26,26,230,0.12);   color: var(--deep-blue); }
+
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 21 — SECTION BREAKER: TOOLS
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide active" id="slide-21">
+  <div class="s21-accent-line"></div>
+  <div class="s21-bg-num">05</div>
+
+  <div class="s21-icons">
+    <div class="s21-icon-wrap">
+      <div class="s21-icon-circle">💬</div>
+      <div class="s21-icon-label">AI</div>
+    </div>
+    <div class="s21-icon-wrap">
+      <div class="s21-icon-circle">🔍</div>
+      <div class="s21-icon-label">Research</div>
+    </div>
+    <div class="s21-icon-wrap">
+      <div class="s21-icon-circle">🏗️</div>
+      <div class="s21-icon-label">Build</div>
+    </div>
+    <div class="s21-icon-wrap">
+      <div class="s21-icon-circle">🎙️</div>
+      <div class="s21-icon-label">Voice</div>
+    </div>
+    <div class="s21-icon-wrap">
+      <div class="s21-icon-circle">🎬</div>
+      <div class="s21-icon-label">Video</div>
+    </div>
+  </div>
+
+  <div class="s21-content">
+    <div class="s21-kicker">Section Five</div>
+    <div class="s21-title">The<br><span class="accent">Tools</span></div>
+    <p class="s21-desc">
+      Not a list of apps to install.
+      A <strong>carefully sequenced toolkit</strong> — each tool introduced at the moment
+      students have the capability to use it meaningfully.
+      Every category seen before any category is committed to.
+    </p>
+    <div class="s21-chips">
+      <span class="s21-chip">AI Assistants</span>
+      <span class="s21-chip">Research</span>
+      <span class="s21-chip">Vibe Coding</span>
+      <span class="s21-chip">Voice</span>
+      <span class="s21-chip">Video</span>
+    </div>
+  </div>
+
+  <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 21 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 22 — THE TOOL JOURNEY
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-22">
+
+  <div class="top-bar">
+    <div class="top-bar-label">Tools</div>
+    <div class="top-bar-title">The Complete Tool Journey — All Four Grades</div>
+  </div>
+
+  <div class="s22-body">
+
+    <!-- LHS -->
+    <div class="s22-left">
+      <div class="s22-eyebrow">Progressive Toolkit</div>
+      <h2 class="s22-headline">Tools earned,<br>not <span class="accent">given.</span></h2>
+      <p class="s22-body-text">
+        Each tool enters at the moment students are ready for it.
+        <strong>Grade 6 is lean by design.</strong>
+        The toolkit expands each year — not because new tools are exciting,
+        but because new capability has been earned.
+      </p>
+
+      <div class="s22-legend">
+        <div class="s22-legend-title">Key</div>
+        <div class="legend-row"><span class="legend-pill lp-primary">Primary</span><span class="legend-label">Main tool, student use</span></div>
+        <div class="legend-row"><span class="legend-pill lp-student">Introduced</span><span class="legend-label">New this grade, student hands-on</span></div>
+        <div class="legend-row"><span class="legend-pill lp-demo">Demo only</span><span class="legend-label">Teacher shows — no student account</span></div>
+        <div class="legend-row"><span class="legend-pill lp-cont">Continuing</span><span class="legend-label">Carries forward from prior year</span></div>
+      </div>
+    </div>
+
+    <!-- RHS — matrix -->
+    <div class="s22-right">
+
+      <!-- Grade headers -->
+      <div class="matrix-headers">
+        <div class="mh-spacer"></div>
+        <div class="mh-grade">Grade 6</div>
+        <div class="mh-grade">Grade 7</div>
+        <div class="mh-grade">Grade 8</div>
+        <div class="mh-grade">Grade 9</div>
+      </div>
+
+      <!-- Row 1: AI Assistants -->
+      <div class="matrix-row">
+        <div class="mr-label"><span class="cat-icon">💬</span>AI Assistants</div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-g6-new">ChatGPT Edu</span>
+          <span class="tp tp-g6-new">Claude Edu</span>
+          <span class="tp tp-demo">Teachable Machine</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-cont">ChatGPT + Claude</span>
+          <span class="tp tp-g7-new">Perplexity</span>
+          <span class="tp tp-student">Teachable Machine ↑</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-cont">ChatGPT + Claude</span>
+          <span class="tp tp-cont">Perplexity</span>
+          <span class="tp tp-g8-new">NotebookLM</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-cont">ChatGPT + Claude</span>
+          <span class="tp tp-cont">Perplexity</span>
+          <span class="tp tp-primary">NotebookLM ↑</span>
+        </div>
+      </div>
+
+      <!-- Row 2: Slide & Presentation -->
+      <div class="matrix-row">
+        <div class="mr-label"><span class="cat-icon">🎨</span>Slide &amp; Presentation</div>
+
+        <div class="matrix-cell empty"></div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-g7-new">Canva AI Edu</span>
+          <span class="tp tp-demo">Gamma</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-cont">Canva AI Edu</span>
+          <span class="tp tp-demo">Gamma</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-cont">Canva AI Edu</span>
+        </div>
+      </div>
+
+      <!-- Row 3: Vibe Coding -->
+      <div class="matrix-row">
+        <div class="mr-label"><span class="cat-icon">🏗️</span>Vibe Coding</div>
+
+        <div class="matrix-cell empty"></div>
+        <div class="matrix-cell empty"></div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-primary">Lovable</span>
+          <span class="tp tp-g8-new">Bolt.new</span>
+          <span class="tp tp-demo">Replit</span>
+        </div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-primary">Lovable ↑</span>
+          <span class="tp tp-cont">Bolt.new</span>
+          <span class="tp tp-demo">Hugging Face</span>
+        </div>
+      </div>
+
+      <!-- Row 4: Voice & Audio -->
+      <div class="matrix-row">
+        <div class="mr-label"><span class="cat-icon">🎙️</span>Voice &amp; Audio</div>
+
+        <div class="matrix-cell empty"></div>
+        <div class="matrix-cell empty"></div>
+        <div class="matrix-cell empty"></div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-primary">ElevenLabs</span>
+          <span class="tp tp-demo">Murf AI</span>
+          <span class="tp tp-demo">Suno</span>
+          <span class="tp tp-demo">NLM Audio</span>
+        </div>
+      </div>
+
+      <!-- Row 5: Video -->
+      <div class="matrix-row">
+        <div class="mr-label"><span class="cat-icon">🎬</span>Video Generation</div>
+
+        <div class="matrix-cell empty"></div>
+        <div class="matrix-cell empty"></div>
+        <div class="matrix-cell empty"></div>
+
+        <div class="matrix-cell">
+          <span class="tp tp-primary">Canva Video AI</span>
+          <span class="tp tp-demo">Runway ML</span>
+          <span class="tp tp-demo">Pika</span>
+          <span class="tp tp-demo">Kling</span>
+        </div>
+      </div>
+
+    </div><!-- /s22-right -->
+  </div><!-- /s22-body -->
+
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 22 / 32</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SLIDE 23 — THE LANDSCAPE APPROACH
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="slide" id="slide-23">
+
+  <div class="top-bar">
+    <div class="top-bar-label">Tools</div>
+    <div class="top-bar-title">The Landscape Approach — How Every Tool Category Is Introduced</div>
+  </div>
+
+  <div class="s23-body">
+
+    <!-- LHS -->
+    <div class="s23-left">
+      <div class="s23-left-bg">20·40</div>
+      <div class="s23-left-inner">
+
+        <div class="s23-eyebrow">The Pedagogy</div>
+        <h2 class="s23-headline">
+          See all options first.<br>
+          <span class="accent">Choose based on merit.</span>
+        </h2>
+        <p class="s23-body-text">
+          Every tool category is introduced through a <strong>20-minute teacher-led landscape demo</strong>
+          before any student creates an account. Students observe three to four tools from the same category,
+          doing the same task, side by side. Then they choose their primary tool — and log their reasoning.
+        </p>
+
+        <div class="s23-facts">
+          <div class="s23-fact">
+            <div class="s23-fact-icon">🕐</div>
+            <div>
+              <div class="s23-fact-title">20 min landscape · 40 min primary</div>
+              <div class="s23-fact-sub">The session structure for every tool introduction across all four grades</div>
+            </div>
+          </div>
+          <div class="s23-fact">
+            <div class="s23-fact-icon">🧠</div>
+            <div>
+              <div class="s23-fact-title">Students build judgment, not habits</div>
+              <div class="s23-fact-sub">Seeing the landscape first prevents tool lock-in — students understand why they chose, not just what they use</div>
+            </div>
+          </div>
+          <div class="s23-fact">
+            <div class="s23-fact-icon">📋</div>
+            <div>
+              <div class="s23-fact-title">Every choice is documented</div>
+              <div class="s23-fact-sub">Tool Choice Log maintained from Grade 7 — submitted as a Capstone artefact in Grade 9</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RHS — process flow + Tool Choice Log -->
+    <div class="s23-right">
+      <div class="s23-right-label">How It Works — Every Tool Category Introduction</div>
+
+      <div class="step-flow">
+        <div class="step-item step-1">
+          <div class="step-circle">1</div>
+          <div class="step-content">
+            <div class="step-title">Landscape Demo — Teacher-Led</div>
+            <div class="step-desc">Teacher opens 3–4 tools from the same category with identical briefs. Students observe output quality, interface, and trade-offs. No student accounts yet.</div>
+          </div>
+        </div>
+        <div class="step-item step-2">
+          <div class="step-circle">2</div>
+          <div class="step-content">
+            <div class="step-title">Compare &amp; Discuss — Class Dialogue</div>
+            <div class="step-desc">Which tool produced the best output for this brief? Which was fastest? Which gave the most control? Students form and defend their own view before a primary tool is named.</div>
+          </div>
+        </div>
+        <div class="step-item step-3">
+          <div class="step-circle">3</div>
+          <div class="step-content">
+            <div class="step-title">Primary Tool Named — Hands-On Begins</div>
+            <div class="step-desc">The programme recommends a primary tool for each category. Students then spend 40 minutes using it — first in pairs, then independently as confidence builds.</div>
+          </div>
+        </div>
+        <div class="step-item step-4">
+          <div class="step-circle">4</div>
+          <div class="step-content">
+            <div class="step-title">Tool Choice Log Updated</div>
+            <div class="step-desc">Students document the category, the tools demoed, the primary tool chosen, and their own reasoned justification. This entry becomes part of their Grade 9 Capstone Design Package.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcl-box">
+        <div class="tcl-label">The Tool Choice Log</div>
+        <div class="tcl-body">
+          A <strong>three-year running document</strong> — started in Grade 7, updated at every landscape demo,
+          submitted in Grade 9. It is the evidence that a student's tool decisions were deliberate,
+          reasoned, and self-directed — not just whatever the teacher last demonstrated.
+        </div>
+        <div class="tcl-grades">
+          <span class="tcl-grade">G7 — Started</span>
+          <span class="tcl-grade">G8 — Updated ×2</span>
+          <span class="tcl-grade">G9 — Updated ×2</span>
+          <span class="tcl-grade">G9 — Submitted</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 23 / 32</div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ── NAV ── -->
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up light" id="btn-up" disabled>&#8593;</button>
+<button class="nav-arrow down light" id="btn-down">&#8595;</button>
+
+<script>
+const slides  = Array.from(document.querySelectorAll('.slide'));
+const dotsEl  = document.getElementById('dots');
+const btnUp   = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+let current   = 0;
+
+// Slide 21 is dark, 22+23 are white
+const themes  = ['light', 'dark', 'dark'];
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'nav-dot ' + themes[i] + (i === 0 ? ' active' : '');
+  d.setAttribute('aria-label', 'Slide ' + (i + 1));
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+function setArrowTheme(idx) {
+  const t = themes[idx];
+  [btnUp, btnDown].forEach(b => {
+    b.className = b.className.replace(/\b(light|dark)\b/, t);
+  });
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  slides[current].classList.remove('active');
+  slides[current].classList.add('prev');
+  const leaving = slides[current];
+  setTimeout(() => leaving.classList.remove('prev'), 500);
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnUp.disabled   = current === 0;
+  btnDown.disabled = current === slides.length - 1;
+  setArrowTheme(current);
+}
+
+btnUp.addEventListener('click',   () => goTo(current - 1));
+btnDown.addEventListener('click', () => goTo(current + 1));
+document.addEventListener('keydown', e => {
+  if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (['ArrowUp','ArrowLeft'].includes(e.key))         { e.preventDefault(); goTo(current - 1); }
+});
+let ty = 0;
+document.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) { dy < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+</script>
+</body>
+</html>

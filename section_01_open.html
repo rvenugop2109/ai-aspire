@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 1: Open</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  font-family: 'Sora', sans-serif;
+  background: var(--dark-navy);
+  overflow: hidden;
+}
+
+/* ── DECK WRAPPER ────────────────────────────────────────────────────────── */
+.deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Each slide fills the full viewport, stacked via transform */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+  overflow: hidden;
+}
+
+.slide.active   { transform: translateY(0); }
+.slide.prev     { transform: translateY(-100%); }
+/* inactive slides stay at translateX(100%) by default */
+
+/* ── NAV DOTS ────────────────────────────────────────────────────────────── */
+.nav-dots {
+  position: fixed;
+  bottom: clamp(18px, 2.5vw, 32px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.active {
+  background: var(--periwinkle);
+  transform: scale(1.3);
+}
+
+/* ── NAV ARROWS ─────────────────────────────────────────────────────────── */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  width: clamp(36px, 3.5vw, 48px);
+  height: clamp(36px, 3.5vw, 48px);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  font-size: clamp(14px, 1.4vw, 18px);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(4px);
+}
+.nav-arrow:hover {
+  background: rgba(123,123,232,0.2);
+  border-color: rgba(123,123,232,0.4);
+  color: var(--white);
+}
+.nav-arrow.left  { left:  clamp(12px, 1.5vw, 24px); }
+.nav-arrow.right { right: clamp(12px, 1.5vw, 24px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+.nav-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+
+/* ── SLIDE BADGE (shared) ────────────────────────────────────────────────── */
+.slide-badge {
+  position: absolute;
+  bottom: clamp(16px, 2vw, 28px);
+  right: clamp(20px, 2.2vw, 32px);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  z-index: 10;
+}
+.slide-badge.dark-text { color: rgba(28,28,46,0.22); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 01 — HERO
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-01 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--white);
+}
+
+/* Left panel */
+.s1-left {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(40px,5.5vw,76px) clamp(40px,5vw,72px);
+  position: relative; z-index: 2;
+}
+.s1-left::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none;
+}
+.s1-left::after {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 300px; height: 300px; border-radius: 50%;
+  border: 1.5px solid rgba(26,26,230,0.07); pointer-events: none;
+}
+.s1-left-top, .s1-left-bottom { position: relative; z-index: 1; }
+
+.label-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(26,26,230,0.06); border: 1px solid rgba(26,26,230,0.14);
+  border-radius: 100px; padding: 6px 16px 6px 10px;
+  margin-bottom: clamp(24px,3vw,40px);
+}
+.label-chip .dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--deep-blue);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.35;transform:scale(0.7)} }
+.label-chip span {
+  font-size: clamp(10px,1vw,12px); font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--deep-blue);
+}
+
+.wordmark {
+  font-size: clamp(36px,4.5vw,64px); font-weight: 800;
+  color: var(--dark-navy); line-height: 1; letter-spacing: -0.02em; margin-bottom: 6px;
+}
+.wordmark em { font-style: normal; color: var(--deep-blue); }
+
+.programme-name {
+  font-size: clamp(15px,1.9vw,25px); font-weight: 300;
+  color: var(--mid-grey); letter-spacing: 0.02em; margin-bottom: clamp(28px,3.5vw,48px);
+}
+
+.hero-statement {
+  font-size: clamp(13px,1.35vw,17px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.75; max-width: 420px;
+  border-left: 3px solid var(--deep-blue); padding-left: 18px;
+}
+.hero-statement strong { color: var(--dark-navy); font-weight: 700; }
+
+.meta-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.tag {
+  font-size: clamp(9px,0.9vw,11px); font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--light-grey);
+  display: flex; align-items: center; gap: 10px;
+}
+.tag::after { content: '·'; color: rgba(26,26,230,0.22); }
+.tag:last-child::after { display: none; }
+.attribution { font-size: clamp(10px,1vw,13px); color: #BBBBCC; }
+.attribution strong { color: var(--mid-grey); font-weight: 600; }
+
+/* Junction line */
+.junction {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(123,123,232,0.4) 20%, rgba(123,123,232,0.4) 80%, transparent 100%);
+  z-index: 5; pointer-events: none;
+}
+
+/* Right panel */
+.s1-right {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(40px,6vw,80px) clamp(40px,5vw,72px);
+  position: relative; overflow: hidden;
+}
+.bg-numeral {
+  position: absolute; right: -40px; bottom: -60px;
+  font-size: clamp(200px,28vw,380px); font-weight: 800;
+  color: rgba(255,255,255,0.025); line-height: 1;
+  pointer-events: none; user-select: none; letter-spacing: -0.05em;
+}
+.s1-right-content { position: relative; z-index: 1; }
+
+.section-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--periwinkle);
+  margin-bottom: clamp(24px,2.8vw,38px); display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content: ''; display: block; width: 32px; height: 2px; background: var(--periwinkle); }
+
+.pillar-stack { display: flex; flex-direction: column; gap: clamp(10px,1.1vw,14px); }
+
+.pillar {
+  display: flex; align-items: center; gap: clamp(14px,1.5vw,20px);
+  padding: clamp(13px,1.4vw,18px) clamp(16px,1.8vw,22px);
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  transition: border-color 0.2s, background 0.2s;
+}
+.pillar:hover { border-color: rgba(123,123,232,0.35); background: rgba(123,123,232,0.07); }
+.pillar-num {
+  width: clamp(32px,3vw,42px); height: clamp(32px,3vw,42px); border-radius: 8px;
+  background: rgba(26,26,230,0.45);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(11px,1.05vw,14px); font-weight: 800; color: var(--pale-blue); flex-shrink: 0;
+}
+.pillar-text { display: flex; flex-direction: column; gap: 5px; }
+.pillar-name { font-size: clamp(14px,1.35vw,18px); font-weight: 700; color: var(--white); }
+.pillar-desc { font-size: clamp(12px,1.1vw,14px); font-weight: 400; color: #9090B8; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 02 — THE OPPORTUNITY
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-02 {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--white);
+}
+#slide-02::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); letter-spacing: -0.01em;
+}
+
+.s2-content {
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+.col-left {
+  padding: clamp(36px,4.5vw,64px) clamp(48px,5.5vw,80px);
+  display: flex; flex-direction: column; justify-content: center;
+  border-right: 1px solid rgba(26,26,230,0.1);
+}
+.col-heading {
+  font-size: clamp(22px,2.8vw,40px); font-weight: 800;
+  color: var(--dark-navy); line-height: 1.15; letter-spacing: -0.02em;
+  margin-bottom: clamp(20px,2.5vw,36px);
+}
+.col-heading em { font-style: normal; color: var(--deep-blue); }
+
+.reality-list { display: flex; flex-direction: column; gap: clamp(14px,1.6vw,22px); }
+.reality-item { display: flex; align-items: flex-start; gap: clamp(14px,1.5vw,20px); }
+.reality-icon {
+  width: clamp(36px,3.6vw,48px); height: clamp(36px,3.6vw,48px);
+  border-radius: 10px; background: rgba(26,26,230,0.07); border: 1px solid rgba(26,26,230,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px,1.7vw,22px); flex-shrink: 0;
+}
+.reality-title {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--dark-navy); margin-bottom: 4px;
+}
+.reality-sub {
+  font-size: clamp(11px,1.05vw,13px); font-weight: 400; color: var(--light-grey); line-height: 1.55;
+}
+
+.col-right {
+  padding: clamp(36px,4.5vw,64px) clamp(48px,5.5vw,80px);
+  display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+.col-right::before {
+  content: 'GAP'; position: absolute; bottom: -20px; right: -10px;
+  font-size: clamp(120px,16vw,220px); font-weight: 800;
+  color: rgba(26,26,230,0.04); line-height: 1;
+  letter-spacing: -0.04em; pointer-events: none; user-select: none;
+}
+.gap-heading {
+  font-size: clamp(22px,2.8vw,40px); font-weight: 800;
+  color: var(--dark-navy); line-height: 1.15; letter-spacing: -0.02em;
+  margin-bottom: clamp(20px,2.5vw,36px);
+}
+.gap-heading em { font-style: normal; color: var(--deep-blue); }
+.gap-statement {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.75; margin-bottom: clamp(24px,3vw,40px);
+  border-left: 3px solid var(--deep-blue); padding-left: 18px;
+}
+.gap-statement strong { color: var(--dark-navy); font-weight: 700; }
+
+.gap-cards { display: flex; flex-direction: column; gap: clamp(10px,1.2vw,16px); }
+.gap-card {
+  padding: clamp(14px,1.5vw,20px) clamp(18px,2vw,26px);
+  border-radius: 10px; border: 1px solid rgba(26,26,230,0.12);
+  background: rgba(26,26,230,0.04);
+  display: flex; align-items: center; gap: 16px;
+}
+.gap-card-num {
+  font-size: clamp(22px,2.4vw,32px); font-weight: 800;
+  color: var(--deep-blue); letter-spacing: -0.02em; flex-shrink: 0;
+  min-width: clamp(50px,5vw,70px);
+}
+.gap-card-label { font-size: clamp(12px,1.15vw,15px); font-weight: 500; color: var(--dark-navy); line-height: 1.4; }
+.gap-card-sub { font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: var(--light-grey); margin-top: 3px; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 03 — DEFINITION
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-03 {
+  display: flex; flex-direction: column;
+  background: var(--dark-navy);
+}
+
+.top-rule {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to right, var(--deep-blue) 0%, var(--periwinkle) 50%, transparent 100%);
+  z-index: 3;
+}
+
+/* Background circles repositioned — bottom right corner only */
+.bg-circle-1 {
+  position: absolute; right: -220px; bottom: -220px;
+  width: clamp(500px,55vw,700px); height: clamp(500px,55vw,700px);
+  border-radius: 50%; border: 1px solid rgba(123,123,232,0.08); pointer-events: none;
+}
+.bg-circle-2 {
+  position: absolute; right: -120px; bottom: -120px;
+  width: clamp(340px,38vw,480px); height: clamp(340px,38vw,480px);
+  border-radius: 50%; border: 1px solid rgba(123,123,232,0.05); pointer-events: none;
+}
+.bg-circle-3 {
+  position: absolute; right: -40px; bottom: -40px;
+  width: clamp(180px,22vw,280px); height: clamp(180px,22vw,280px);
+  border-radius: 50%; background: rgba(26,26,230,0.05); border: 1px solid rgba(26,26,230,0.1); pointer-events: none;
+}
+
+/* Full-width single-column content — statement top, stats bottom */
+.s3-content {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,5vw,64px) clamp(60px,7vw,100px) clamp(24px,3vw,40px);
+  position: relative; z-index: 2;
+  gap: clamp(24px,3vw,40px);
+}
+
+/* Statement block — full width, left-aligned */
+.statement-col {
+  display: flex; flex-direction: column;
+  max-width: 820px;
+}
+
+.eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: clamp(16px,2vw,28px);
+}
+.eyebrow::before { content: ''; display: block; width: 32px; height: 2px; background: var(--periwinkle); }
+
+/* Statement now on one line — no line breaks needed */
+.main-statement {
+  font-size: clamp(26px,3.6vw,52px); font-weight: 800;
+  color: var(--white); line-height: 1.12; letter-spacing: -0.03em;
+  margin-bottom: clamp(16px,2vw,28px);
+}
+.main-statement .accent { color: var(--pale-blue); }
+.main-statement .break { display: inline; }
+
+.sub-statement {
+  font-size: clamp(13px,1.35vw,18px); font-weight: 300;
+  color: rgba(255,255,255,0.55); line-height: 1.65; max-width: 720px;
+  margin-bottom: clamp(16px,2vw,28px);
+}
+.sub-statement strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+.three-chips { display: flex; gap: clamp(8px,1vw,14px); flex-wrap: wrap; }
+.chip {
+  padding: clamp(7px,0.8vw,10px) clamp(14px,1.6vw,22px); border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.12);
+  font-size: clamp(11px,1vw,13px); font-weight: 600; letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.04);
+}
+.chip.primary { background: var(--deep-blue); border-color: var(--deep-blue); color: var(--white); }
+
+/* ── STAT ROW — horizontal across full width ─────────────────────────────── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px,1.4vw,20px);
+  position: relative; z-index: 2;
+}
+
+.stat-block {
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(18px,2vw,26px) clamp(20px,2.2vw,30px);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  gap: 4px;
+}
+.stat-num {
+  font-size: clamp(30px,4vw,52px); font-weight: 800;
+  color: var(--pale-blue); letter-spacing: -0.03em; line-height: 1;
+}
+.stat-unit {
+  font-size: clamp(10px,0.9vw,12px); font-weight: 700;
+  color: var(--periwinkle); letter-spacing: 0.1em; text-transform: uppercase;
+  margin-top: 2px;
+}
+.stat-label {
+  font-size: clamp(11px,1vw,13px); font-weight: 400;
+  color: rgba(255,255,255,0.4); line-height: 1.4; margin-top: 4px;
+}
+
+/* stat-divider no longer needed — keeping class harmless */
+.stat-divider { display: none; }
+
+.bottom-strip {
+  padding: clamp(16px,2vw,24px) clamp(60px,7vw,100px);
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  position: relative; z-index: 2;
+}
+.bottom-wordmark {
+  font-size: clamp(12px,1.2vw,16px); font-weight: 700;
+  color: rgba(255,255,255,0.3); letter-spacing: -0.01em;
+}
+.bottom-wordmark em { font-style: normal; color: rgba(160,160,245,0.6); }
+.bottom-badge {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+}
+
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ═══ SLIDE 01 — HERO ════════════════════════════════════════════════ -->
+  <div class="slide active" id="slide-01">
+    <div class="junction"></div>
+
+    <div class="s1-left">
+      <div class="s1-left-top">
+        <div class="label-chip"><div class="dot"></div><span>Programme Proposal · 2025–26</span></div>
+        <div class="wordmark">Campus<em>logix</em></div>
+        <div class="programme-name">AI Aspire for Schools</div>
+        <p class="hero-statement">
+          A student who completes this programme does not just know about AI.
+          They know how to <strong>think</strong> in a world shaped by it —
+          and they have the skills, judgment, and confidence to use it
+          responsibly, creatively, and effectively.
+        </p>
+      </div>
+      <div class="s1-left-bottom">
+        <div class="meta-tags">
+          <span class="tag">Grades 6 – 9</span>
+          <span class="tag">4 Years</span>
+          <span class="tag">168 Hours</span>
+          <span class="tag">NEP Compatible</span>
+        </div>
+        <div class="attribution">A <strong>Campuslogix</strong> initiative &nbsp;·&nbsp; Powered by <strong>Mellone</strong></div>
+      </div>
+    </div>
+
+    <div class="s1-right">
+      <div class="bg-numeral">4</div>
+      <div class="s1-right-content">
+        <div class="section-label">Five Capabilities. Four Years.</div>
+        <div class="pillar-stack">
+          <div class="pillar">
+            <div class="pillar-num">01</div>
+            <div class="pillar-text"><div class="pillar-name">Think Clearly</div><div class="pillar-desc">Logical reasoning · Problem decomposition</div></div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">02</div>
+            <div class="pillar-text"><div class="pillar-name">Understand the Landscape</div><div class="pillar-desc">AI literacy · Conceptual fluency</div></div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">03</div>
+            <div class="pillar-text"><div class="pillar-name">Work With AI</div><div class="pillar-desc">Prompt engineering · AI collaboration</div></div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">04</div>
+            <div class="pillar-text"><div class="pillar-name">Build With AI</div><div class="pillar-desc">Vibe coding · AI-assisted creation</div></div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">05</div>
+            <div class="pillar-text"><div class="pillar-name">Think Responsibly</div><div class="pillar-desc">AI ethics · Digital citizenship</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-badge dark-text">Campuslogix AI Aspire &nbsp;·&nbsp; 01 / 32</div>
+  </div>
+
+
+  <!-- ═══ SLIDE 02 — OPPORTUNITY ════════════════════════════════════════ -->
+  <div class="slide" id="slide-02">
+
+    <div class="top-bar">
+      <div class="top-bar-label">The Opportunity</div>
+      <div class="top-bar-title">The World Your Students Are Entering</div>
+    </div>
+
+    <div class="s2-content">
+      <div class="col-left">
+        <div class="col-heading">AI is already in<br><em>every classroom.</em></div>
+        <div class="reality-list">
+          <div class="reality-item">
+            <div class="reality-icon">📱</div>
+            <div>
+              <div class="reality-title">In their pockets</div>
+              <div class="reality-sub">Every student carries AI — autocorrect, recommendations, voice assistants — as part of daily life.</div>
+            </div>
+          </div>
+          <div class="reality-item">
+            <div class="reality-icon">💼</div>
+            <div>
+              <div class="reality-title">In every career they will enter</div>
+              <div class="reality-sub">AI is reshaping every profession — not just tech. Medicine, law, education, finance, agriculture.</div>
+            </div>
+          </div>
+          <div class="reality-item">
+            <div class="reality-icon">🏛️</div>
+            <div>
+              <div class="reality-title">In national policy</div>
+              <div class="reality-sub">India's IndiaAI Mission and the DPDP Act signal that AI literacy is a civic necessity, not an elective.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="gap-heading">Most schools are<br><em>not teaching it.</em></div>
+        <p class="gap-statement">
+          Students are using AI daily — to write assignments, search for answers, generate ideas.
+          But almost none of them know <strong>how it works, how to direct it, or how to question it.</strong>
+          That gap is the problem Campuslogix AI Aspire is built to close.
+        </p>
+        <div class="gap-cards">
+          <div class="gap-card">
+            <div class="gap-card-num">4 yrs</div>
+            <div>
+              <div class="gap-card-label">Compound learning from Grade 6 to Grade 9</div>
+              <div class="gap-card-sub">Each year builds on the last — no year stands alone</div>
+            </div>
+          </div>
+          <div class="gap-card">
+            <div class="gap-card-num">5</div>
+            <div>
+              <div class="gap-card-label">Capabilities built — not taught as topics</div>
+              <div class="gap-card-sub">Reasoning, literacy, prompting, building, and ethics</div>
+            </div>
+          </div>
+          <div class="gap-card">
+            <div class="gap-card-num">168 hrs</div>
+            <div>
+              <div class="gap-card-label">Of practitioner-designed instruction</div>
+              <div class="gap-card-sub">Delivered within existing school timetables</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-badge dark-text">Campuslogix AI Aspire &nbsp;·&nbsp; 02 / 32</div>
+  </div>
+
+
+  <!-- ═══ SLIDE 03 — DEFINITION ══════════════════════════════════════════ -->
+  <div class="slide" id="slide-03">
+    <div class="top-rule"></div>
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+    <div class="bg-circle-3"></div>
+
+    <div class="s3-content">
+      <div class="statement-col">
+        <div class="eyebrow">What Campuslogix AI Aspire Is</div>
+        <h1 class="main-statement">
+          Not a technology course.
+          A <span class="accent">thinking</span> course —
+          taught through AI.
+        </h1>
+        <p class="sub-statement">
+          Every session, every tool, and every assessment builds one of
+          <strong>five compounding capabilities.</strong> By Grade 9, a student
+          can think clearly under ambiguity, direct AI with precision,
+          build functional digital products, and defend their work — ethically
+          and publicly — in front of a panel.
+        </p>
+        <div class="three-chips">
+          <span class="chip primary">Practitioner-designed</span>
+          <span class="chip">NEP Compatible</span>
+          <span class="chip">Grades 6 – 9</span>
+          <span class="chip">Board-agnostic</span>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-block">
+          <div class="stat-num">4</div>
+          <div class="stat-unit">Years</div>
+          <div class="stat-label">Compound programme</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">5</div>
+          <div class="stat-unit">Pillars</div>
+          <div class="stat-label">Core capabilities</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">28</div>
+          <div class="stat-unit">Sessions</div>
+          <div class="stat-label">Per academic year</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">168</div>
+          <div class="stat-unit">Hours</div>
+          <div class="stat-label">Total instruction</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-strip">
+      <div class="bottom-wordmark">Campus<em>logix</em> AI Aspire for Schools</div>
+      <div class="bottom-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 03 / 32</div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+
+<!-- ── NAV CONTROLS ─────────────────────────────────────────────────────── -->
+<div class="nav-dots">
+  <button class="nav-dot active" data-index="0" aria-label="Slide 1"></button>
+  <button class="nav-dot"        data-index="1" aria-label="Slide 2"></button>
+  <button class="nav-dot"        data-index="2" aria-label="Slide 3"></button>
+</div>
+
+<button class="nav-arrow left"  id="btn-prev" disabled aria-label="Previous slide">&#8592;</button>
+<button class="nav-arrow right" id="btn-next" aria-label="Next slide">&#8594;</button>
+
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dots   = Array.from(document.querySelectorAll('.nav-dot'));
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+let current = 0;
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+
+  slides[current].classList.remove('active');
+  slides[current].classList.add('prev');
+
+  // Clean up all prev classes after transition
+  const leaving = slides[current];
+  setTimeout(() => { leaving.classList.remove('prev'); }, 500);
+
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === slides.length - 1;
+}
+
+btnPrev.addEventListener('click', () => goTo(current - 1));
+btnNext.addEventListener('click', () => goTo(current + 1));
+dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault(); goTo(current + 1);
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault(); goTo(current - 1);
+  }
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) { dx < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+</script>
+
+</body>
+</html>

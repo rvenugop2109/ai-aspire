@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --deep-blue:#1A1AE6;--mid-blue:#3333CC;--periwinkle:#7B7BE8;
+  --pale-blue:#A0A0F5;--off-white:#F4F4FB;--dark-navy:#1C1C2E;
+  --white:#FFFFFF;--mid-grey:#4A4A6A;--light-grey:#8888A8;
+}
+html,body{width:100%;height:100%;font-family:'Sora',sans-serif;overflow:hidden}
+.deck{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;width:100%;height:100%;transform:translateY(100%);transition:transform .45s cubic-bezier(.65,0,.35,1);will-change:transform;overflow:hidden}
+.slide.active{transform:translateY(0)}.slide.prev{transform:translateY(-100%)}
+.nav-dots{position:fixed;bottom:clamp(18px,2.5vw,32px);left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:100}
+.nav-dot{width:7px;height:7px;border-radius:50%;border:none;cursor:pointer;padding:0;transition:background .25s,transform .25s}
+.nav-dot.light{background:rgba(255,255,255,.25)}.nav-dot.dark{background:rgba(28,28,46,.18)}
+.nav-dot.active.light{background:var(--periwinkle);transform:scale(1.3)}.nav-dot.active.dark{background:var(--deep-blue);transform:scale(1.3)}
+.nav-arrow{position:fixed;left:50%;transform:translateX(-50%);z-index:100;width:clamp(36px,3.5vw,48px);height:clamp(36px,3.5vw,48px);border-radius:50%;font-size:clamp(14px,1.4vw,18px);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s,color .2s;backdrop-filter:blur(4px)}
+.nav-arrow.light{border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.5)}
+.nav-arrow.dark{border:1px solid rgba(26,26,230,.2);background:rgba(26,26,230,.06);color:var(--mid-grey)}
+.nav-arrow.light:hover{background:rgba(123,123,232,.2);border-color:rgba(123,123,232,.4);color:var(--white)}
+.nav-arrow.dark:hover{background:rgba(26,26,230,.12);border-color:rgba(26,26,230,.4);color:var(--deep-blue)}
+.nav-arrow.up{top:clamp(12px,1.5vw,24px)}.nav-arrow.down{bottom:clamp(52px,6vw,76px)}
+.nav-arrow:disabled{opacity:.2;cursor:default}
+.slide-badge{position:absolute;bottom:clamp(16px,2vw,28px);right:clamp(20px,2.2vw,32px);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;z-index:10}
+.badge-light{color:rgba(255,255,255,.15)}.badge-dark{color:rgba(28,28,46,.22)}
+.top-bar{background:var(--deep-blue);padding:clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;flex-shrink:0}
+.top-bar-label{font-size:clamp(10px,.95vw,12px);font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--pale-blue);display:flex;align-items:center;gap:12px}
+.top-bar-label::before{content:'';display:block;width:24px;height:2px;background:var(--pale-blue)}
+.top-bar-title{font-size:clamp(13px,1.3vw,17px);font-weight:700;color:var(--white)}
+
+/* ══ SLIDE 27 ══════════════════════════════════════════════════════════════ */
+#slide-27{background:var(--dark-navy);display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:clamp(60px,8vw,120px)}
+#slide-27::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.s27-bg-num{position:absolute;right:clamp(40px,6vw,80px);top:50%;transform:translateY(-50%);font-size:clamp(200px,28vw,360px);font-weight:800;line-height:1;color:rgba(255,255,255,.03);letter-spacing:-.05em;pointer-events:none;user-select:none}
+.s27-accent{position:absolute;right:0;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,transparent,var(--periwinkle) 40%,var(--deep-blue) 70%,transparent)}
+.s27-deco{position:absolute;right:clamp(80px,10vw,160px);bottom:clamp(56px,7vw,108px);pointer-events:none}
+.s27-content{position:relative;z-index:2}
+.s27-kicker{font-size:clamp(10px,.95vw,12px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--periwinkle);display:flex;align-items:center;gap:12px;margin-bottom:clamp(20px,2.5vw,36px)}
+.s27-kicker::before{content:'';display:block;width:40px;height:2px;background:var(--periwinkle)}
+.s27-title{font-size:clamp(42px,7vw,108px);font-weight:800;line-height:.92;letter-spacing:-.04em;color:var(--white);margin-bottom:clamp(24px,3vw,44px)}
+.s27-title .a{color:var(--pale-blue)}
+.s27-desc{font-size:clamp(14px,1.5vw,20px);font-weight:300;color:rgba(255,255,255,.45);line-height:1.65;max-width:560px}
+.s27-desc strong{color:rgba(255,255,255,.75);font-weight:600}
+
+/* ══ SLIDE 28 ══════════════════════════════════════════════════════════════ */
+#slide-28{background:var(--white);display:grid;grid-template-rows:auto 1fr}
+#slide-28::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(26,26,230,.05) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
+.s28-body{display:grid;grid-template-columns:1fr 1.5fr;position:relative;z-index:1;overflow:hidden}
+.s28-left{display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,4vw,52px) clamp(40px,5vw,64px) clamp(44px,5.5vw,60px);border-right:1px solid rgba(26,26,230,.08);position:relative;overflow:hidden}
+.s28-bgw{position:absolute;bottom:-30px;left:-20px;font-size:clamp(80px,11vw,140px);font-weight:800;line-height:1;color:rgba(26,26,230,.04);letter-spacing:-.04em;pointer-events:none;user-select:none}
+.s28-i{position:relative;z-index:1}
+.eyebrow{font-size:clamp(10px,.95vw,12px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--deep-blue);display:flex;align-items:center;gap:12px;margin-bottom:clamp(14px,1.8vw,24px)}
+.eyebrow::before{content:'';display:block;width:28px;height:2px;background:var(--deep-blue)}
+.hl{font-size:clamp(22px,3vw,42px);font-weight:800;line-height:1.1;letter-spacing:-.02em;color:var(--dark-navy);margin-bottom:clamp(12px,1.5vw,20px)}
+.hl .a{color:var(--deep-blue)}
+.bt{font-size:clamp(12px,1.15vw,15px);font-weight:400;color:var(--mid-grey);line-height:1.7;border-left:3px solid rgba(26,26,230,.2);padding-left:14px;margin-bottom:clamp(16px,2vw,28px)}
+.bt strong{color:var(--dark-navy);font-weight:700}
+.s28-meta{font-size:clamp(11px,1.05vw,14px);font-weight:600;color:var(--light-grey);display:flex;align-items:center;gap:8px}
+.s28-meta::before{content:'';display:block;width:24px;height:2px;background:rgba(26,26,230,.25)}
+.s28-right{background:var(--off-white);display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.2vw,16px);padding:clamp(28px,3.5vw,48px) clamp(36px,4.5vw,60px) clamp(44px,5.5vw,56px)}
+.pc{background:var(--white);border-radius:14px;border:1px solid rgba(26,26,230,.08);padding:clamp(18px,2.2vw,28px) clamp(18px,2vw,26px);display:flex;flex-direction:column;gap:clamp(8px,1vw,14px);transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
+.pc:hover{border-color:rgba(26,26,230,.2);box-shadow:0 4px 24px rgba(26,26,230,.06)}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.pc:nth-child(1)::before{background:var(--pale-blue)}.pc:nth-child(2)::before{background:var(--periwinkle)}
+.pc:nth-child(3)::before{background:var(--mid-blue)}.pc:nth-child(4)::before{background:var(--deep-blue)}
+.pc-h{display:flex;align-items:center;gap:10px}
+.pc-ico{width:clamp(32px,3.2vw,42px);height:clamp(32px,3.2vw,42px);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,1.5vw,19px);flex-shrink:0}
+.ic1{background:rgba(160,160,245,.15)}.ic2{background:rgba(123,123,232,.12)}.ic3{background:rgba(51,51,204,.12)}.ic4{background:rgba(26,26,230,.12)}
+.pc-role{font-size:clamp(13px,1.3vw,17px);font-weight:800;color:var(--dark-navy);line-height:1}
+.pc-sec{font-size:clamp(9px,.85vw,11px);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--light-grey);margin-top:3px}
+.pc-cap{font-size:clamp(11px,1.05vw,13px);font-weight:400;color:var(--mid-grey);line-height:1.6}
+.pc-cap strong{color:var(--dark-navy);font-weight:700}
+.pc-out{margin-top:auto;padding:clamp(8px,1vw,12px) clamp(10px,1.2vw,16px);border-radius:8px;background:rgba(26,26,230,.05);border:1px solid rgba(26,26,230,.1);font-size:clamp(10px,.95vw,12px);font-weight:600;color:var(--deep-blue);line-height:1.4}
+
+/* ══ SLIDE 29 ══════════════════════════════════════════════════════════════ */
+#slide-29{background:var(--white);display:grid;grid-template-rows:auto 1fr}
+#slide-29::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(26,26,230,.05) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
+.s29-body{display:grid;grid-template-columns:1fr 1.2fr;position:relative;z-index:1;overflow:hidden}
+.s29-left{display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,4vw,52px) clamp(40px,5vw,64px) clamp(44px,5.5vw,60px);border-right:1px solid rgba(26,26,230,.08);position:relative;overflow:hidden}
+.s29-bgn{position:absolute;bottom:-30px;left:-20px;font-size:clamp(100px,14vw,180px);font-weight:800;line-height:1;color:rgba(26,26,230,.04);letter-spacing:-.05em;pointer-events:none;user-select:none}
+.s29-i{position:relative;z-index:1}
+.s29-facts{display:flex;flex-direction:column;gap:clamp(8px,1vw,12px)}
+.s29-fact{display:flex;align-items:flex-start;gap:12px;padding:clamp(10px,1.2vw,14px) clamp(14px,1.6vw,20px);border-radius:10px;background:rgba(26,26,230,.04);border:1px solid rgba(26,26,230,.1)}
+.s29-fi{font-size:clamp(15px,1.5vw,19px);flex-shrink:0;margin-top:1px}
+.s29-ft{font-size:clamp(12px,1.15vw,15px);font-weight:700;color:var(--dark-navy);margin-bottom:3px}
+.s29-fs{font-size:clamp(10px,.95vw,12px);color:var(--light-grey);line-height:1.5}
+.s29-right{background:var(--off-white);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:clamp(28px,3.5vw,48px) clamp(36px,4.5vw,60px) clamp(44px,5.5vw,56px);gap:clamp(12px,1.5vw,20px)}
+.s29-vl{font-size:clamp(9px,.85vw,11px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--light-grey);align-self:flex-start}
+.cw{display:flex;gap:clamp(20px,3vw,48px);align-items:flex-end;width:100%}
+.cc{display:flex;flex-direction:column;align-items:center;flex:1}
+.ch{font-size:clamp(11px,1.05vw,13px);font-weight:800;color:var(--dark-navy);margin-bottom:clamp(10px,1.2vw,16px);text-align:center;padding:clamp(6px,.7vw,9px) clamp(12px,1.4vw,18px);border-radius:100px;background:rgba(26,26,230,.06);border:1px solid rgba(26,26,230,.14)}
+.ys{display:flex;flex-direction:column-reverse;gap:3px;width:100%}
+.yb{border-radius:8px;padding:clamp(8px,1vw,12px) clamp(10px,1.2vw,16px);display:flex;align-items:center;gap:8px}
+.yg{font-size:clamp(9px,.85vw,11px);font-weight:800;letter-spacing:.08em;flex-shrink:0}
+.yt{font-size:clamp(8px,.78vw,10px);font-weight:600;letter-spacing:.04em;opacity:.8}
+.sa .yb:nth-child(1){background:rgba(26,26,230,.18);border:1px solid rgba(26,26,230,.3)}.sa .yb:nth-child(1) .yg,.sa .yb:nth-child(1) .yt{color:#2222CC}
+.sa .yb:nth-child(2){background:rgba(51,51,204,.14);border:1px solid rgba(51,51,204,.25)}.sa .yb:nth-child(2) .yg,.sa .yb:nth-child(2) .yt{color:#3333AA}
+.sa .yb:nth-child(3){background:rgba(123,123,232,.12);border:1px solid rgba(123,123,232,.22)}.sa .yb:nth-child(3) .yg,.sa .yb:nth-child(3) .yt{color:#4444AA}
+.sa .yb:nth-child(4){background:rgba(160,160,245,.12);border:1px solid rgba(160,160,245,.22)}.sa .yb:nth-child(4) .yg,.sa .yb:nth-child(4) .yt{color:#5555AA}
+.sb .yb:nth-child(1){background:rgba(26,26,230,.18);border:1px solid rgba(26,26,230,.3)}.sb .yb:nth-child(1) .yg,.sb .yb:nth-child(1) .yt{color:#2222CC}
+.co{margin-top:clamp(10px,1.2vw,16px);text-align:center;font-size:clamp(11px,1.05vw,13px);font-weight:700;line-height:1.4}
+.sa-o{color:var(--deep-blue)}.sb-o{color:var(--light-grey)}
+.gc{width:100%;text-align:center;padding:clamp(12px,1.4vw,18px) clamp(16px,1.8vw,24px);border-radius:12px;background:rgba(26,26,230,.07);border:1px solid rgba(26,26,230,.15)}
+.gcn{font-size:clamp(28px,3.5vw,46px);font-weight:800;color:var(--deep-blue);letter-spacing:-.03em;line-height:1}
+.gcl{font-size:clamp(11px,1.05vw,14px);font-weight:600;color:var(--mid-grey);margin-top:4px}
+
+/* ══ SLIDE 30 ══════════════════════════════════════════════════════════════ */
+#slide-30{background:var(--dark-navy);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:clamp(60px,8vw,120px);position:relative}
+#slide-30::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+.s30-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60vw;height:60vh;background:radial-gradient(ellipse,rgba(26,26,230,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+.s30-c{position:relative;z-index:1;text-align:center;max-width:900px}
+.s30-rt{width:clamp(40px,5vw,72px);height:3px;background:linear-gradient(to right,transparent,var(--periwinkle),var(--deep-blue),transparent);border-radius:2px;margin:0 auto clamp(28px,3.5vw,52px)}
+.s30-pre{font-size:clamp(13px,1.4vw,18px);font-weight:300;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:clamp(20px,2.5vw,36px)}
+.s30-st{font-size:clamp(20px,3vw,44px);font-weight:400;color:rgba(255,255,255,.75);line-height:1.45;letter-spacing:-.01em;margin-bottom:clamp(8px,1vw,14px)}
+.s30-st .em{font-weight:800;color:var(--white)}
+.s30-st .ac{font-weight:700;color:var(--pale-blue)}
+.s30-rb{width:clamp(40px,5vw,72px);height:3px;background:linear-gradient(to right,var(--deep-blue),var(--periwinkle),transparent);border-radius:2px;margin:clamp(28px,3.5vw,52px) auto 0}
+
+/* ══ SLIDE 31 ══════════════════════════════════════════════════════════════ */
+#slide-31{background:var(--dark-navy);display:flex;flex-direction:column;justify-content:center;align-items:center}
+#slide-31::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+.s31-c{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1vw,14px);text-align:center}
+.s31-wm{font-size:clamp(52px,8vw,112px);font-weight:800;line-height:1;letter-spacing:-.03em;color:var(--white)}
+.s31-wm em{font-style:normal;color:var(--pale-blue)}
+.s31-pg{font-size:clamp(16px,2.2vw,30px);font-weight:300;color:rgba(255,255,255,.5);letter-spacing:.04em}
+.s31-div{width:clamp(40px,5vw,72px);height:2px;margin-top:clamp(8px,1vw,14px);background:linear-gradient(to right,transparent,var(--periwinkle),var(--deep-blue),transparent);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<div class="slide active" id="slide-27">
+  <div class="s27-accent"></div>
+  <div class="s27-bg-num">07</div>
+  <div class="s27-deco">
+    <svg width="260" height="160" viewBox="0 0 260 160" fill="none">
+      <line x1="0" y1="20"  x2="240" y2="80" stroke="rgba(123,123,232,.18)" stroke-width="1.5"/>
+      <line x1="0" y1="50"  x2="240" y2="80" stroke="rgba(85,85,204,.22)"   stroke-width="1.5"/>
+      <line x1="0" y1="80"  x2="240" y2="80" stroke="rgba(51,51,204,.28)"   stroke-width="2"/>
+      <line x1="0" y1="110" x2="240" y2="80" stroke="rgba(26,26,230,.22)"   stroke-width="1.5"/>
+      <line x1="0" y1="140" x2="240" y2="80" stroke="rgba(26,26,230,.18)"   stroke-width="1.5"/>
+      <polygon points="240,68 260,80 240,92" fill="rgba(26,26,230,.4)"/>
+    </svg>
+  </div>
+  <div class="s27-content">
+    <div class="s27-kicker">Section Seven</div>
+    <div class="s27-title">Job Readiness<br>&amp; <span class="a">Close</span></div>
+    <p class="s27-desc">What does a student who has completed all four grades <strong>look like in the real world?</strong> What careers does this capability unlock? And why does starting in Grade 6 matter so much?</p>
+  </div>
+  <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 27 / 31</div>
+</div>
+
+<div class="slide" id="slide-28">
+  <div class="top-bar"><div class="top-bar-label">Job Readiness</div><div class="top-bar-title">Four Profiles. One Capability.</div></div>
+  <div class="s28-body">
+    <div class="s28-left">
+      <div class="s28-bgw">FUTURE</div>
+      <div class="s28-i">
+        <div class="eyebrow">The Real-World Payoff</div>
+        <h2 class="hl">Every industry.<br>Every role.<br><span class="a">One advantage.</span></h2>
+        <p class="bt">AI literacy is not a technology skill. It is a <strong>thinking and working skill</strong> that compounds across every profession. The student who can direct AI precisely, evaluate its output critically, and build with it confidently will outperform peers who cannot — in any field they choose.</p>
+        <div class="s28-meta">Medicine · Law · Business · Design · Finance · Education</div>
+      </div>
+    </div>
+    <div class="s28-right">
+      <div class="pc">
+        <div class="pc-h"><div class="pc-ico ic1">📊</div><div><div class="pc-role">The Analyst</div><div class="pc-sec">Data · Business · Research</div></div></div>
+        <div class="pc-cap">Processes large datasets, generates structured reports, and surfaces patterns using AI as a precision tool — not a shortcut. <strong>Works with a depth and speed that peers without AI literacy cannot match.</strong></div>
+        <div class="pc-out">Answers questions in hours that take others days</div>
+      </div>
+      <div class="pc">
+        <div class="pc-h"><div class="pc-ico ic2">📣</div><div><div class="pc-role">The Marketer</div><div class="pc-sec">Marketing · Content · Communications</div></div></div>
+        <div class="pc-cap">Generates content strategies, tests and iterates copy variants, analyses campaign performance, and adapts in real time. <strong>Creates at scale without losing voice or quality.</strong></div>
+        <div class="pc-out">Ships in a day what once took a team a week</div>
+      </div>
+      <div class="pc">
+        <div class="pc-h"><div class="pc-ico ic3">⚖️</div><div><div class="pc-role">The Professional</div><div class="pc-sec">Law · Medicine · Finance · Education</div></div></div>
+        <div class="pc-cap">Researches faster, drafts more accurately, flags edge cases others miss — and knows exactly when <strong>not</strong> to trust the AI's output. <strong>Delivers better work with better judgment.</strong></div>
+        <div class="pc-out">Trusted precisely because they know AI's limits</div>
+      </div>
+      <div class="pc">
+        <div class="pc-h"><div class="pc-ico ic4">🚀</div><div><div class="pc-role">The Entrepreneur</div><div class="pc-sec">Founders · Innovators · Problem-Solvers</div></div></div>
+        <div class="pc-cap">Describes a product idea in plain English, builds a working prototype, and presents it — <strong>without needing a technical co-founder.</strong></div>
+        <div class="pc-out">Builds what others only conceptualise</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 28 / 31</div>
+</div>
+
+<div class="slide" id="slide-29">
+  <div class="top-bar"><div class="top-bar-label">Job Readiness</div><div class="top-bar-title">Why Now. Why Grade 6.</div></div>
+  <div class="s29-body">
+    <div class="s29-left">
+      <div class="s29-bgn">4×</div>
+      <div class="s29-i">
+        <div class="eyebrow">The Compounding Argument</div>
+        <h2 class="hl">Starting early<br>is not an<br><span class="a">advantage.</span><br>It is the point.</h2>
+        <p class="bt">A student who starts in Grade 6 arrives at Grade 9 with <strong>four years of compounded capability.</strong> A student who starts in Grade 9 gets one year. The gap by the time they enter higher education or the workforce is not marginal — it is structural.</p>
+        <div class="s29-facts">
+          <div class="s29-fact"><div class="s29-fi">🔗</div><div><div class="s29-ft">Each year requires the previous</div><div class="s29-fs">Grade 8 vibe coding is only possible because Grade 7 built the prompt engineering foundation.</div></div></div>
+          <div class="s29-fact"><div class="s29-fi">⏱️</div><div><div class="s29-ft">The window is now</div><div class="s29-fs">Every year a school waits is a year of compound capability that cannot be recovered later.</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="s29-right">
+      <div class="s29-vl">Capability at Grade 9 — By Start Year</div>
+      <div class="cw">
+        <div class="cc">
+          <div class="ch">Starts Grade 6</div>
+          <div class="ys sa">
+            <div class="yb"><div class="yg">G9</div><div class="yt">Evaluate &amp; Create</div></div>
+            <div class="yb"><div class="yg">G8</div><div class="yt">Apply</div></div>
+            <div class="yb"><div class="yg">G7</div><div class="yt">Understand</div></div>
+            <div class="yb"><div class="yg">G6</div><div class="yt">Discover</div></div>
+          </div>
+          <div class="co sa-o">4 years of<br>compound capability</div>
+        </div>
+        <div class="cc">
+          <div class="ch">Starts Grade 9</div>
+          <div class="ys sb">
+            <div class="yb"><div class="yg">G9</div><div class="yt">Evaluate &amp; Create</div></div>
+          </div>
+          <div class="co sb-o">1 year —<br>no foundation beneath it</div>
+        </div>
+      </div>
+      <div class="gc">
+        <div class="gcn">3 years</div>
+        <div class="gcl">of unreachable compound capability separating the two students — by Grade 9</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-badge badge-dark">Campuslogix AI Aspire &nbsp;·&nbsp; 29 / 31</div>
+</div>
+
+<div class="slide" id="slide-30">
+  <div class="s30-glow"></div>
+  <div class="s30-c">
+    <div class="s30-rt"></div>
+    <div class="s30-pre">Campuslogix AI Aspire for Schools</div>
+    <div class="s30-st">
+      A student who completes this programme<br>
+      does not just <span class="em">know about AI.</span><br><br>
+      They know how to <span class="ac">think</span> in a world shaped by it —<br>
+      and they have the skills, judgment, and confidence<br>
+      to use it <span class="em">responsibly, creatively,</span><br>
+      and <span class="em">effectively.</span>
+    </div>
+    <div class="s30-rb"></div>
+  </div>
+  <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 30 / 31</div>
+</div>
+
+<div class="slide" id="slide-31">
+  <div class="s31-c">
+    <div class="s31-wm">Campus<em>logix</em></div>
+    <div class="s31-pg">AI Aspire for Schools</div>
+    <div class="s31-div"></div>
+  </div>
+  <div class="slide-badge badge-light">Campuslogix AI Aspire &nbsp;·&nbsp; 31 / 31</div>
+</div>
+
+</div>
+
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up light" id="btn-up" disabled>&#8593;</button>
+<button class="nav-arrow down light" id="btn-down">&#8595;</button>
+
+<script>
+const slides=Array.from(document.querySelectorAll('.slide'));
+const dotsEl=document.getElementById('dots');
+const btnUp=document.getElementById('btn-up');
+const btnDown=document.getElementById('btn-down');
+let current=0;
+const themes=['light','dark','dark','light','light'];
+slides.forEach((_,i)=>{
+  const d=document.createElement('button');
+  d.className='nav-dot '+themes[i]+(i===0?' active':'');
+  d.setAttribute('aria-label','Slide '+(i+1));
+  d.addEventListener('click',()=>goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots=Array.from(dotsEl.querySelectorAll('.nav-dot'));
+function setArrows(idx){[btnUp,btnDown].forEach(b=>{b.className=b.className.replace(/\b(light|dark)\b/,themes[idx]);})}
+function goTo(idx){
+  if(idx<0||idx>=slides.length)return;
+  slides[current].classList.remove('active');slides[current].classList.add('prev');
+  const prev=slides[current];setTimeout(()=>prev.classList.remove('prev'),500);
+  current=idx;slides[current].classList.remove('prev');slides[current].classList.add('active');
+  dots.forEach((d,i)=>d.classList.toggle('active',i===current));
+  btnUp.disabled=current===0;btnDown.disabled=current===slides.length-1;setArrows(current);
+}
+btnUp.addEventListener('click',()=>goTo(current-1));
+btnDown.addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(['ArrowDown','ArrowRight',' '].includes(e.key)){e.preventDefault();goTo(current+1);}
+  if(['ArrowUp','ArrowLeft'].includes(e.key)){e.preventDefault();goTo(current-1);}
+});
+let ty=0;
+document.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-ty;if(Math.abs(dy)>50){dy<0?goTo(current+1):goTo(current-1);}});
+</script>
+</body>
+</html>

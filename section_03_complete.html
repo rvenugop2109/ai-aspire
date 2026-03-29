@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 3: The Five Pillars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & VARS ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ────────────────────────────────────────────────────────────────── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ─────────────────────────────────────────────────────────────────── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.active { background: var(--periwinkle); transform: scale(1.3); }
+.nav-dot.on-white { background: rgba(28,28,46,0.18); }
+.nav-dot.on-white.active { background: var(--deep-blue); transform: scale(1.3); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  z-index: 100;
+  width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px);
+  border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(4px);
+}
+.nav-arrow:hover { background: rgba(123,123,232,0.2); border-color: rgba(123,123,232,0.4); color: var(--white); }
+.nav-arrow.up   { top:  clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+.nav-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+
+/* Slide badge */
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.15); z-index: 10;
+}
+.slide-badge.on-white { color: rgba(28,28,46,0.22); }
+
+/* Dot grid utility */
+.dot-grid::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+/* Deep blue top bar (shared) */
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 10 — SECTION BREAKER
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-10 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: clamp(60px,8vw,120px);
+}
+#slide-10::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+
+/* Ghost section number */
+.s10-bg-num {
+  position: absolute; right: clamp(40px,6vw,80px); top: 50%; transform: translateY(-50%);
+  font-size: clamp(200px,28vw,360px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+
+/* Five small pillar shapes — decorative, bottom right */
+.s10-pillars-deco {
+  position: absolute; right: clamp(60px,8vw,120px); bottom: clamp(40px,5vw,80px);
+  display: flex; align-items: flex-end; gap: clamp(6px,0.8vw,12px);
+  pointer-events: none;
+}
+.s10-deco-pillar {
+  width: clamp(10px,1.2vw,18px); border-radius: 4px 4px 2px 2px;
+  opacity: 0.18;
+}
+.s10-deco-pillar:nth-child(1) { height: clamp(28px,4vh,52px);  background: #A0A0F5; }
+.s10-deco-pillar:nth-child(2) { height: clamp(38px,5.5vh,70px); background: #7B7BE8; }
+.s10-deco-pillar:nth-child(3) { height: clamp(48px,7vh,88px);  background: #5555CC; }
+.s10-deco-pillar:nth-child(4) { height: clamp(38px,5.5vh,70px); background: #3333CC; }
+.s10-deco-pillar:nth-child(5) { height: clamp(28px,4vh,52px);  background: #1A1AE6; }
+/* Baseline under decorative pillars */
+.s10-deco-base {
+  position: absolute; right: clamp(60px,8vw,120px); bottom: clamp(36px,4.5vw,72px);
+  height: 2px; width: clamp(100px,13vw,200px);
+  background: linear-gradient(to right, rgba(160,160,245,0.3), rgba(26,26,230,0.6));
+  border-radius: 1px;
+}
+
+/* Right accent line */
+.s10-accent-line {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, transparent, var(--periwinkle) 40%, var(--deep-blue) 70%, transparent);
+}
+
+.s10-content { position: relative; z-index: 2; }
+
+.s10-kicker {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s10-kicker::before { content: ''; display: block; width: 40px; height: 2px; background: var(--periwinkle); }
+
+.s10-title {
+  font-size: clamp(48px,8vw,120px); font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.04em; color: var(--white);
+  margin-bottom: clamp(24px,3vw,44px);
+}
+.s10-title .accent { color: var(--pale-blue); }
+
+.s10-desc {
+  font-size: clamp(14px,1.5vw,20px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.65; max-width: 560px;
+}
+.s10-desc strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+/* Five pill labels under description */
+.s10-pills {
+  display: flex; gap: clamp(8px,1vw,14px); flex-wrap: nowrap;
+  margin-top: clamp(24px,3vw,44px);
+  white-space: nowrap;
+}
+.s10-pill {
+  padding: clamp(6px,0.7vw,9px) clamp(12px,1.3vw,18px); border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: clamp(10px,0.9vw,12px); font-weight: 600; letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04);
+  display: flex; align-items: center; gap: 7px;
+  flex-shrink: 0;
+}
+.s10-pill-dot {
+  width: 7px; height: 7px; border-radius: 50; flex-shrink: 0;
+  border-radius: 50%;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 11 — PILLAR 1: THINK CLEARLY
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-11 {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+}
+#slide-11::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s11-body {
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS — context and outcomes */
+.s11-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,4.5vw,60px) clamp(44px,5.5vw,76px);
+  border-right: 1px solid rgba(26,26,230,0.08);
+  position: relative;
+}
+
+/* Large pillar number watermark */
+.s11-bg-num {
+  position: absolute; bottom: -20px; left: -10px;
+  font-size: clamp(160px,22vw,280px); font-weight: 800; line-height: 1;
+  color: rgba(26,26,230,0.04); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+
+.s11-left-inner { position: relative; z-index: 1; }
+
+.s11-pillar-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(26,26,230,0.07); border: 1px solid rgba(26,26,230,0.15);
+  border-radius: 100px; padding: 6px 16px 6px 10px;
+  margin-bottom: clamp(18px,2.2vw,32px);
+}
+.s11-pillar-tag .tag-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--deep-blue);
+}
+.s11-pillar-tag span {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--deep-blue);
+}
+
+.s11-headline {
+  font-size: clamp(28px,3.8vw,52px); font-weight: 800; line-height: 1.06;
+  letter-spacing: -0.03em; color: var(--dark-navy);
+  margin-bottom: clamp(8px,1vw,14px);
+}
+.s11-headline .accent { color: var(--deep-blue); }
+
+.s11-sub {
+  font-size: clamp(12px,1.2vw,16px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; margin-bottom: clamp(20px,2.5vw,36px);
+  border-left: 3px solid var(--deep-blue); padding-left: 16px;
+}
+.s11-sub strong { color: var(--dark-navy); font-weight: 700; }
+
+/* Why it matters note */
+.s11-matters {
+  padding: clamp(12px,1.4vw,18px) clamp(16px,1.8vw,24px);
+  border-radius: 10px; background: rgba(26,26,230,0.05);
+  border: 1px solid rgba(26,26,230,0.12);
+}
+.s11-matters-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--deep-blue); margin-bottom: 6px;
+}
+.s11-matters-text {
+  font-size: clamp(11px,1.05vw,14px); font-weight: 400; color: var(--mid-grey); line-height: 1.6;
+}
+.s11-matters-text strong { color: var(--dark-navy); font-weight: 600; }
+
+/* RHS — outcome cards */
+.s11-right {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(32px,4vw,56px) clamp(40px,5vw,68px);
+  gap: clamp(8px,1vw,13px);
+  background: var(--off-white);
+}
+
+.s11-outcomes-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+  margin-bottom: clamp(4px,0.5vw,8px);
+}
+
+.outcome-card {
+  display: flex; align-items: flex-start; gap: clamp(12px,1.4vw,18px);
+  padding: clamp(12px,1.4vw,18px) clamp(16px,1.8vw,22px);
+  border-radius: 12px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.07);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.outcome-card:hover {
+  border-color: rgba(26,26,230,0.2);
+  transform: translateX(4px);
+}
+
+/* Icon badge */
+.oc-icon {
+  width: clamp(32px,3.2vw,42px); height: clamp(32px,3.2vw,42px);
+  border-radius: 9px; background: rgba(26,26,230,0.08);
+  border: 1px solid rgba(26,26,230,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(14px,1.4vw,18px); flex-shrink: 0;
+}
+
+.oc-text {}
+.oc-title {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 700;
+  color: var(--dark-navy); margin-bottom: 3px; line-height: 1.3;
+}
+.oc-desc {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 400;
+  color: var(--light-grey); line-height: 1.5;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(28,28,46,0.18); border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.active { background: var(--deep-blue); transform: scale(1.3); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  z-index: 100; width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px);
+  border-radius: 50%; border: 1px solid rgba(26,26,230,0.2);
+  background: rgba(26,26,230,0.06); color: var(--mid-grey);
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.nav-arrow:hover { background: rgba(26,26,230,0.12); border-color: rgba(26,26,230,0.4); color: var(--deep-blue); }
+.nav-arrow.up   { top:  clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+.nav-arrow:disabled:hover { background: rgba(26,26,230,0.06); border-color: rgba(26,26,230,0.2); color: var(--mid-grey); }
+
+/* ── SHARED PILLAR SLIDE LAYOUT ── */
+.pillar-slide {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+}
+.pillar-slide::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+.pillar-body {
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS */
+.pillar-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,4.5vw,60px) clamp(44px,5.5vw,76px);
+  border-right: 1px solid rgba(26,26,230,0.08);
+  position: relative; overflow: hidden;
+}
+.pillar-bg-num {
+  position: absolute; bottom: -20px; left: -10px;
+  font-size: clamp(160px,22vw,280px); font-weight: 800; line-height: 1;
+  color: rgba(26,26,230,0.04); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+.pillar-left-inner { position: relative; z-index: 1; }
+
+.pillar-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  border-radius: 100px; padding: 6px 16px 6px 10px;
+  margin-bottom: clamp(18px,2.2vw,32px);
+}
+.pillar-tag .tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+.pillar-tag span {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+
+.pillar-headline {
+  font-size: clamp(28px,3.8vw,52px); font-weight: 800; line-height: 1.06;
+  letter-spacing: -0.03em; color: var(--dark-navy);
+  margin-bottom: clamp(8px,1vw,14px);
+}
+
+.pillar-sub {
+  font-size: clamp(12px,1.2vw,16px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.7; margin-bottom: clamp(20px,2.5vw,36px);
+  padding-left: 16px;
+}
+.pillar-sub strong { color: var(--dark-navy); font-weight: 700; }
+
+.pillar-matters {
+  padding: clamp(12px,1.4vw,18px) clamp(16px,1.8vw,24px);
+  border-radius: 10px;
+}
+.pillar-matters-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.pillar-matters-text {
+  font-size: clamp(11px,1.05vw,14px); font-weight: 400; color: var(--mid-grey); line-height: 1.6;
+}
+.pillar-matters-text strong { color: var(--dark-navy); font-weight: 600; }
+
+/* RHS */
+.pillar-right {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(32px,4vw,56px) clamp(40px,5vw,68px);
+  gap: clamp(8px,1vw,13px);
+  background: var(--off-white);
+}
+.outcomes-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+  margin-bottom: clamp(4px,0.5vw,8px);
+}
+.outcome-card {
+  display: flex; align-items: flex-start; gap: clamp(12px,1.4vw,18px);
+  padding: clamp(12px,1.4vw,18px) clamp(16px,1.8vw,22px);
+  border-radius: 12px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.07);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.outcome-card:hover { border-color: rgba(26,26,230,0.2); transform: translateX(4px); }
+.oc-icon {
+  width: clamp(32px,3.2vw,42px); height: clamp(32px,3.2vw,42px);
+  border-radius: 9px; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(14px,1.4vw,18px); flex-shrink: 0;
+}
+.oc-title {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 700;
+  color: var(--dark-navy); margin-bottom: 3px; line-height: 1.3;
+}
+.oc-desc {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 400;
+  color: var(--light-grey); line-height: 1.5;
+}
+
+/* ── PILLAR COLOUR TOKENS ── */
+/* P2 — periwinkle */
+.p2-tag  { background: rgba(123,123,232,0.08); border: 1px solid rgba(123,123,232,0.18); }
+.p2-tag .tag-dot { background: var(--periwinkle); }
+.p2-tag span { color: var(--periwinkle); }
+.p2-sub  { border-left: 3px solid var(--periwinkle); }
+.p2-matters { background: rgba(123,123,232,0.06); border: 1px solid rgba(123,123,232,0.15); }
+.p2-matters .pillar-matters-label { color: var(--periwinkle); }
+.p2-headline .accent { color: var(--periwinkle); }
+.p2-icon { background: rgba(123,123,232,0.1); border: 1px solid rgba(123,123,232,0.15); }
+
+/* P3 — mid-blue */
+.p3-tag  { background: rgba(51,51,204,0.08); border: 1px solid rgba(51,51,204,0.18); }
+.p3-tag .tag-dot { background: var(--mid-blue); }
+.p3-tag span { color: var(--mid-blue); }
+.p3-sub  { border-left: 3px solid var(--mid-blue); }
+.p3-matters { background: rgba(51,51,204,0.06); border: 1px solid rgba(51,51,204,0.15); }
+.p3-matters .pillar-matters-label { color: var(--mid-blue); }
+.p3-headline .accent { color: var(--mid-blue); }
+.p3-icon { background: rgba(51,51,204,0.1); border: 1px solid rgba(51,51,204,0.15); }
+
+/* P4 — deep-blue */
+.p4-tag  { background: rgba(26,26,230,0.08); border: 1px solid rgba(26,26,230,0.2); }
+.p4-tag .tag-dot { background: var(--deep-blue); }
+.p4-tag span { color: var(--deep-blue); }
+.p4-sub  { border-left: 3px solid var(--deep-blue); }
+.p4-matters { background: rgba(26,26,230,0.06); border: 1px solid rgba(26,26,230,0.14); }
+.p4-matters .pillar-matters-label { color: var(--deep-blue); }
+.p4-headline .accent { color: var(--deep-blue); }
+.p4-icon { background: rgba(26,26,230,0.08); border: 1px solid rgba(26,26,230,0.14); }
+
+/* P5 — dark navy accent */
+.p5-tag  { background: rgba(28,28,46,0.06); border: 1px solid rgba(28,28,46,0.15); }
+.p5-tag .tag-dot { background: var(--dark-navy); }
+.p5-tag span { color: var(--dark-navy); }
+.p5-sub  { border-left: 3px solid var(--dark-navy); }
+.p5-matters { background: rgba(28,28,46,0.04); border: 1px solid rgba(28,28,46,0.12); }
+.p5-matters .pillar-matters-label { color: var(--dark-navy); }
+.p5-headline .accent { color: var(--dark-navy); }
+.p5-icon { background: rgba(28,28,46,0.06); border: 1px solid rgba(28,28,46,0.12); }
+
+</style>
+</head>
+<body>
+<div class="deck">
+  <!-- ═══ SLIDE 10 — SECTION BREAKER ════════════════════════════════════ -->
+  <div class="slide active" id="slide-10">
+    <div class="s10-accent-line"></div>
+    <div class="s10-bg-num">03</div>
+    <div class="s10-pillars-deco">
+      <div class="s10-deco-pillar"></div>
+      <div class="s10-deco-pillar"></div>
+      <div class="s10-deco-pillar"></div>
+      <div class="s10-deco-pillar"></div>
+      <div class="s10-deco-pillar"></div>
+    </div>
+    <div class="s10-deco-base"></div>
+
+    <div class="s10-content">
+      <div class="s10-kicker">Section Three</div>
+      <div class="s10-title">The Five<br><span class="accent">Pillars</span></div>
+      <p class="s10-desc">
+        Five capabilities — not five topics.
+        Each one is <strong>built through practice across four years</strong>,
+        not taught as a chapter and then moved on from.
+        Together they form the structure that holds the programme up.
+      </p>
+      <div class="s10-pills">
+        <span class="s10-pill">
+          <span class="s10-pill-dot" style="background:#A0A0F5"></span>
+          Think Clearly
+        </span>
+        <span class="s10-pill">
+          <span class="s10-pill-dot" style="background:#8888D8"></span>
+          Understand the Landscape
+        </span>
+        <span class="s10-pill">
+          <span class="s10-pill-dot" style="background:#5555CC"></span>
+          Work With AI
+        </span>
+        <span class="s10-pill">
+          <span class="s10-pill-dot" style="background:#3333CC"></span>
+          Build With AI
+        </span>
+        <span class="s10-pill">
+          <span class="s10-pill-dot" style="background:#1A1AE6"></span>
+          Think Responsibly
+        </span>
+      </div>
+    </div>
+
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 10 / 32</div>
+  </div>
+
+
+  <!-- ═══ SLIDE 11 — PILLAR 1: THINK CLEARLY ════════════════════════════ -->
+  <div class="slide" id="slide-11">
+
+    <div class="top-bar">
+      <div class="top-bar-label">Pillar 01 of 05</div>
+      <div class="top-bar-title">Think Clearly — Logical Reasoning and Structured Problem-Solving</div>
+    </div>
+
+    <div class="s11-body">
+
+      <!-- LHS -->
+      <div class="s11-left">
+        <div class="s11-bg-num">01</div>
+        <div class="s11-left-inner">
+
+          <div class="s11-pillar-tag">
+            <div class="tag-dot"></div>
+            <span>Pillar 1 · The Foundation</span>
+          </div>
+
+          <h2 class="s11-headline">
+            The skill<br>no automation<br>can <span class="accent">replace.</span>
+          </h2>
+
+          <p class="s11-sub">
+            Logical reasoning is not a module in this programme.
+            It is <strong>the spine</strong> — the thread woven through
+            every session of every year. In Grade 6 it is taught explicitly.
+            By Grade 9 it is how students think.
+          </p>
+
+          <div class="s11-matters">
+            <div class="s11-matters-label">Why it matters — for parents</div>
+            <div class="s11-matters-text">
+              Every competitive entrance exam — <strong>JEE, NEET, CLAT, CAT, UPSC</strong> — has a logical reasoning component.
+              This programme builds it from age 11, through practice, not by accident.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RHS — outcome cards -->
+      <div class="s11-right">
+        <div class="s11-outcomes-label">What students can do by Grade 9</div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">🔍</div>
+          <div class="oc-text">
+            <div class="oc-title">Recognise and apply patterns</div>
+            <div class="oc-desc">Identify rules, sequences, and structures across unfamiliar situations — not just familiar ones.</div>
+          </div>
+        </div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">↔️</div>
+          <div class="oc-text">
+            <div class="oc-title">Reason with conditional logic</div>
+            <div class="oc-desc">Construct and evaluate if-then arguments. Identify exactly where a chain of reasoning breaks down.</div>
+          </div>
+        </div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">🧩</div>
+          <div class="oc-text">
+            <div class="oc-title">Decompose complex problems</div>
+            <div class="oc-desc">Break any large, messy problem into structured, solvable parts before attempting a solution.</div>
+          </div>
+        </div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">⚖️</div>
+          <div class="oc-text">
+            <div class="oc-title">Distinguish evidence from opinion</div>
+            <div class="oc-desc">Evaluate a claim by the quality of its evidence — not by how confidently it is stated.</div>
+          </div>
+        </div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">🛡️</div>
+          <div class="oc-text">
+            <div class="oc-title">Identify logical fallacies</div>
+            <div class="oc-desc">Name at least 8 common fallacies and spot them in real AI-related arguments, news, and advertising.</div>
+          </div>
+        </div>
+
+        <div class="outcome-card">
+          <div class="oc-icon">🔄</div>
+          <div class="oc-text">
+            <div class="oc-title">Steel-man an opposing view</div>
+            <div class="oc-desc">Construct the strongest possible version of an argument they disagree with — before critiquing it.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="slide-badge on-white">Campuslogix AI Aspire &nbsp;·&nbsp; 11 / 32</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SLIDE 12 — PILLAR 2: UNDERSTAND THE LANDSCAPE
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="slide pillar-slide" id="slide-12">
+    <div class="top-bar">
+      <div class="top-bar-label">Pillar 02 of 05</div>
+      <div class="top-bar-title">Understand the Landscape — AI Literacy and Conceptual Fluency</div>
+    </div>
+    <div class="pillar-body">
+
+      <div class="pillar-left">
+        <div class="pillar-bg-num">02</div>
+        <div class="pillar-left-inner">
+          <div class="pillar-tag p2-tag">
+            <div class="tag-dot"></div>
+            <span>Pillar 2 · AI Literacy</span>
+          </div>
+          <h2 class="pillar-headline p2-headline">
+            Not just what<br>AI does — but<br>how it <span class="accent">works.</span>
+          </h2>
+          <p class="pillar-sub p2-sub">
+            Students who only know what AI produces are
+            <strong>passive users</strong>. Students who understand how it learns,
+            where it fails, and what it cannot do are active,
+            critical participants — in every field, at every level.
+          </p>
+          <div class="pillar-matters p2-matters">
+            <div class="pillar-matters-label">Why it matters — for parents</div>
+            <div class="pillar-matters-text">
+              AI is being discussed in every boardroom, every policy brief, and every family dinner table.
+              A student who genuinely understands what AI is will navigate the next decade
+              <strong>with clarity while others navigate it with anxiety.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-right">
+        <div class="outcomes-label">What students can do by Grade 9</div>
+
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">🧠</div>
+          <div>
+            <div class="oc-title">Explain how AI learns</div>
+            <div class="oc-desc">Describe training data, model accuracy, and the difference between supervised, unsupervised, and reinforcement learning — without technical jargon.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">🗺️</div>
+          <div>
+            <div class="oc-title">Distinguish types of AI</div>
+            <div class="oc-desc">Narrow vs general AI, generative vs predictive AI, the difference between a model, a tool, and an application.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">📊</div>
+          <div>
+            <div class="oc-title">Understand data as AI's raw material</div>
+            <div class="oc-desc">Why data quality, quantity, and bias determine what an AI can and cannot do — and what garbage in, garbage out really means.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">🇮🇳</div>
+          <div>
+            <div class="oc-title">Identify AI in Indian daily life</div>
+            <div class="oc-desc">Recognise AI across healthcare, agriculture, finance, education, and law enforcement — with specific Indian examples and context.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">⚠️</div>
+          <div>
+            <div class="oc-title">Understand AI's limits</div>
+            <div class="oc-desc">Hallucination, bias, context blindness — and why each of these matters in high-stakes decisions.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p2-icon">📰</div>
+          <div>
+            <div class="oc-title">Read AI news critically</div>
+            <div class="oc-desc">Evaluate any AI claim — from a news article, product pitch, or policy brief — for accuracy, exaggeration, or misleading framing.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 12 / 32</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SLIDE 13 — PILLAR 3: WORK WITH AI
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="slide pillar-slide" id="slide-13">
+    <div class="top-bar">
+      <div class="top-bar-label">Pillar 03 of 05</div>
+      <div class="top-bar-title">Work With AI — Prompt Engineering and AI Collaboration</div>
+    </div>
+    <div class="pillar-body">
+
+      <div class="pillar-left">
+        <div class="pillar-bg-num">03</div>
+        <div class="pillar-left-inner">
+          <div class="pillar-tag p3-tag">
+            <div class="tag-dot"></div>
+            <span>Pillar 3 · Prompt Engineering</span>
+          </div>
+          <h2 class="pillar-headline p3-headline">
+            The practical<br>skill of <span class="accent">our time.</span>
+          </h2>
+          <p class="pillar-sub p3-sub">
+            Prompt engineering is already listed in job descriptions
+            across every industry. More importantly, the underlying skill —
+            <strong>communicating precisely and iterating intelligently</strong> —
+            is valued in every profession, every institution,
+            and every collaborative environment.
+          </p>
+          <div class="pillar-matters p3-matters">
+            <div class="pillar-matters-label">The four-year progression</div>
+            <div class="pillar-matters-text">
+              Grade 6: clear instructions ·
+              Grade 7: RCT framework ·
+              Grade 8: chain prompting and output shaping ·
+              Grade 9: <strong>system prompts, few-shot, and meta-prompting</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-right">
+        <div class="outcomes-label">What students can do by Grade 9</div>
+
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">✍️</div>
+          <div>
+            <div class="oc-title">Write precise, effective instructions</div>
+            <div class="oc-desc">Communicate with AI clearly enough that the output is useful on the first or second attempt — not the tenth.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">🎯</div>
+          <div>
+            <div class="oc-title">Apply the RCT Framework</div>
+            <div class="oc-desc">Construct any prompt using Role + Context + Task as a default mental model, across every subject and every tool.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">🔗</div>
+          <div>
+            <div class="oc-title">Design and execute prompt chains</div>
+            <div class="oc-desc">Break a multi-step project into a sequence of prompts — each building on the last — and document the logic as a flowchart.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">⚙️</div>
+          <div>
+            <div class="oc-title">Write and deploy system prompts</div>
+            <div class="oc-desc">Set persistent behaviour for an AI session. Build a specialised AI assistant for a specific purpose and test its consistency.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">🔁</div>
+          <div>
+            <div class="oc-title">Apply meta-prompting</div>
+            <div class="oc-desc">Ask AI to critique and improve their own prompts — then evaluate whether the AI's suggestion is actually better, and why.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p3-icon">📚</div>
+          <div>
+            <div class="oc-title">Maintain a personal Prompt Toolkit</div>
+            <div class="oc-desc">A documented, reusable set of prompts covering every tool they use — with usage notes, examples, and known limitations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 13 / 32</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SLIDE 14 — PILLAR 4: BUILD WITH AI
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="slide pillar-slide" id="slide-14">
+    <div class="top-bar">
+      <div class="top-bar-label">Pillar 04 of 05</div>
+      <div class="top-bar-title">Build With AI — Vibe Coding and AI-Assisted Creation</div>
+    </div>
+    <div class="pillar-body">
+
+      <div class="pillar-left">
+        <div class="pillar-bg-num">04</div>
+        <div class="pillar-left-inner">
+          <div class="pillar-tag p4-tag">
+            <div class="tag-dot"></div>
+            <span>Pillar 4 · Vibe Coding</span>
+          </div>
+          <h2 class="pillar-headline p4-headline">
+            From idea to<br>working product.<br><span class="accent">No syntax needed.</span>
+          </h2>
+          <p class="pillar-sub p4-sub">
+            The ability to build a working digital product was once the
+            exclusive domain of computer science graduates.
+            <strong>Vibe coding changes that.</strong> Students describe what
+            they want in plain English — the AI builds it —
+            and the student evaluates, iterates, and ships.
+          </p>
+          <div class="pillar-matters p4-matters">
+            <div class="pillar-matters-label">Why it matters — for parents</div>
+            <div class="pillar-matters-text">
+              This is not a coding course. It is a <strong>creation course.</strong>
+              A student who leaves school able to prototype an idea and iterate on feedback
+              has a capability that most adults in the workforce do not yet have.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-right">
+        <div class="outcomes-label">What students can do by Grade 9</div>
+
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">🏗️</div>
+          <div>
+            <div class="oc-title">Prototype from plain-English descriptions</div>
+            <div class="oc-desc">Build functional multi-page web applications using Lovable — describe it, it builds it — without memorising syntax.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">🗺️</div>
+          <div>
+            <div class="oc-title">Design before building</div>
+            <div class="oc-desc">Produce a full solution architecture — system map, feature plan, AI integration brief — before opening any build tool.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">🐛</div>
+          <div>
+            <div class="oc-title">Debug with structured reasoning</div>
+            <div class="oc-desc">Diagnose why something is not working, write a precise problem statement, and direct the AI to fix it — without touching code directly.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">🎙️</div>
+          <div>
+            <div class="oc-title">Produce AI voice and video</div>
+            <div class="oc-desc">Generate ElevenLabs voiceovers and Canva Video AI components as part of a complete multi-modal project.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">🎓</div>
+          <div>
+            <div class="oc-title">Present and defend their work</div>
+            <div class="oc-desc">Explain what they built, why they built it, what they would improve — to a live panel that includes external guests.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p4-icon">📁</div>
+          <div>
+            <div class="oc-title">Maintain a Build Portfolio</div>
+            <div class="oc-desc">A body of work spanning Grade 8 and 9 — school-useful app, team Mini-Project, and individual Capstone.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 14 / 32</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SLIDE 15 — PILLAR 5: THINK RESPONSIBLY
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="slide pillar-slide" id="slide-15">
+    <div class="top-bar">
+      <div class="top-bar-label">Pillar 05 of 05</div>
+      <div class="top-bar-title">Think Responsibly — AI Ethics, Digital Citizenship, and Responsible Use</div>
+    </div>
+    <div class="pillar-body">
+
+      <div class="pillar-left">
+        <div class="pillar-bg-num">05</div>
+        <div class="pillar-left-inner">
+          <div class="pillar-tag p5-tag">
+            <div class="tag-dot"></div>
+            <span>Pillar 5 · AI Ethics</span>
+          </div>
+          <h2 class="pillar-headline p5-headline">
+            The pillar that<br>makes all the<br>others <span class="accent">safe.</span>
+          </h2>
+          <p class="pillar-sub p5-sub">
+            Teaching students to use AI without teaching them about bias,
+            misinformation, deepfakes, and accountability is like teaching
+            them to drive without road safety.
+            <strong>Ethics is not a final chapter</strong> in this programme —
+            it is woven through every single grade.
+          </p>
+          <div class="pillar-matters p5-matters">
+            <div class="pillar-matters-label">The four-year progression</div>
+            <div class="pillar-matters-text">
+              Grade 6: can AI be wrong? ·
+              Grade 7: deepfakes and misinformation ·
+              Grade 8: who is responsible when AI fails? ·
+              Grade 9: <strong>design responsible AI from the brief up</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-right">
+        <div class="outcomes-label">What students can do by Grade 9</div>
+
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">🎯</div>
+          <div>
+            <div class="oc-title">Identify bias in AI systems</div>
+            <div class="oc-desc">Explain how biased training data produces biased outputs — and why this matters in hiring, lending, healthcare, and law enforcement.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">🔒</div>
+          <div>
+            <div class="oc-title">Protect their own data</div>
+            <div class="oc-desc">Apply consistent data hygiene: what to share, what never to share, how to identify when a tool is harvesting data they did not intend to give.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">🕵️</div>
+          <div>
+            <div class="oc-title">Recognise and resist misinformation</div>
+            <div class="oc-desc">Spot hallucinated content, deepfakes, and AI-generated disinformation. Verify claims before sharing or acting on them.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">⛓️</div>
+          <div>
+            <div class="oc-title">Map accountability chains</div>
+            <div class="oc-desc">When AI causes harm, trace the chain of decisions — developer, company, regulator, buyer, end user — and identify where responsibility sits.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">🏛️</div>
+          <div>
+            <div class="oc-title">Understand their rights</div>
+            <div class="oc-desc">Know what the DPDP Act means personally. Understand that their data has value and that they have rights over it.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="oc-icon p5-icon">🔧</div>
+          <div>
+            <div class="oc-title">Design responsible AI from the start</div>
+            <div class="oc-desc">Write an AI solution brief with fairness safeguards built in — not retrofitted as an afterthought. Conduct a full ethical review before building.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 15 / 32</div>
+  </div>
+
+
+</div><!-- /deck -->
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up"   id="btn-up"   disabled>&#8593;</button>
+<button class="nav-arrow down" id="btn-down">&#8595;</button>
+
+<script>
+const slides  = Array.from(document.querySelectorAll('.slide'));
+const dotsEl  = document.getElementById('dots');
+const btnUp   = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+let current   = 0;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  // Slide 11 (index 1) is on white — use dark dots
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '') + (i === 1 ? ' on-white' : '');
+  d.setAttribute('aria-label', 'Slide ' + (i + 1));
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  const leaving = slides[current];
+  leaving.classList.remove('active');
+  leaving.classList.add('prev');
+  setTimeout(() => leaving.classList.remove('prev'), 500);
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnUp.disabled   = current === 0;
+  btnDown.disabled = current === slides.length - 1;
+}
+
+btnUp.addEventListener('click',   () => goTo(current - 1));
+btnDown.addEventListener('click', () => goTo(current + 1));
+document.addEventListener('keydown', e => {
+  if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (['ArrowUp','ArrowLeft'].includes(e.key))         { e.preventDefault(); goTo(current - 1); }
+});
+let ty = 0;
+document.addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dy) > 50) { dy < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+</script>
+</body>
+</html>

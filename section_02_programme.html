@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campuslogix AI Aspire — Section 2: The Programme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --deep-blue:  #1A1AE6;
+  --mid-blue:   #3333CC;
+  --periwinkle: #7B7BE8;
+  --pale-blue:  #A0A0F5;
+  --off-white:  #F4F4FB;
+  --dark-navy:  #1C1C2E;
+  --white:      #FFFFFF;
+  --mid-grey:   #4A4A6A;
+  --light-grey: #8888A8;
+}
+html, body { width: 100%; height: 100%; font-family: 'Sora', sans-serif; overflow: hidden; }
+
+/* ── DECK ────────────────────────────────────────────────────────────────── */
+.deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+.slide {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform; overflow: hidden;
+}
+.slide.active { transform: translateY(0); }
+.slide.prev   { transform: translateY(-100%); }
+
+/* ── NAV ─────────────────────────────────────────────────────────────────── */
+.nav-dots {
+  position: fixed; bottom: clamp(18px,2.5vw,32px); left: 50%;
+  transform: translateX(-50%); display: flex; gap: 10px; z-index: 100;
+}
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); border: none; cursor: pointer; padding: 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.nav-dot.active { background: var(--periwinkle); transform: scale(1.3); }
+.nav-dot.dark { background: rgba(28,28,46,0.2); }
+.nav-dot.dark.active { background: var(--deep-blue); }
+
+.nav-arrow {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  z-index: 100;
+  width: clamp(36px,3.5vw,48px); height: clamp(36px,3.5vw,48px);
+  border-radius: 50%; border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5);
+  font-size: clamp(14px,1.4vw,18px); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(4px);
+}
+.nav-arrow:hover { background: rgba(123,123,232,0.2); border-color: rgba(123,123,232,0.4); color: var(--white); }
+.nav-arrow.up   { top:  clamp(12px,1.5vw,24px); }
+.nav-arrow.down { bottom: clamp(52px,6vw,76px); }
+.nav-arrow:disabled { opacity: 0.2; cursor: default; }
+.nav-arrow:disabled:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+
+/* Slide badge */
+.slide-badge {
+  position: absolute; bottom: clamp(16px,2vw,28px); right: clamp(20px,2.2vw,32px);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.15); z-index: 10;
+}
+.slide-badge.on-white { color: rgba(28,28,46,0.22); }
+
+/* Top bar shared */
+.top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 2; flex-shrink: 0;
+}
+.top-bar-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.top-bar-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.top-bar-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+/* Dot grid bg */
+.dot-grid::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 04 — SECTION DIVIDER
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-04 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+  padding: clamp(60px,8vw,120px);
+}
+
+/* Diagonal grid lines */
+#slide-04::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* Large section number */
+.section-bg-num {
+  position: absolute; right: clamp(40px,6vw,80px); top: 50%; transform: translateY(-50%);
+  font-size: clamp(200px,28vw,360px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+
+.s4-content { position: relative; z-index: 2; }
+
+.s4-kicker {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s4-kicker::before { content: ''; display: block; width: 40px; height: 2px; background: var(--periwinkle); }
+
+.s4-title {
+  font-size: clamp(48px,8vw,120px); font-weight: 800; line-height: 0.92;
+  letter-spacing: -0.04em; color: var(--white); margin-bottom: clamp(24px,3vw,44px);
+}
+.s4-title .blue { color: var(--pale-blue); }
+
+.s4-desc {
+  font-size: clamp(14px,1.5vw,20px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 540px;
+}
+
+/* Accent line — right edge */
+.s4-accent-line {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, transparent, var(--periwinkle), var(--deep-blue), transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 05 — NOT A TECHNOLOGY COURSE
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-05 {
+  background: var(--white);
+  display: grid; grid-template-columns: 1fr 1fr;
+}
+#slide-05 .dot-grid::before { z-index: 0; }
+
+.s5-left {
+  background: var(--white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(48px,6vw,88px) clamp(48px,5.5vw,80px);
+  position: relative; z-index: 2; border-right: 1px solid rgba(26,26,230,0.08);
+}
+.s5-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s5-eyebrow::before { content: ''; display: block; width: 32px; height: 2px; background: var(--deep-blue); }
+
+.s5-headline {
+  font-size: clamp(26px,3.8vw,54px); font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.03em; color: var(--dark-navy); margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s5-headline .accent { color: var(--deep-blue); }
+
+.s5-body {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.75; border-left: 3px solid var(--deep-blue); padding-left: 18px;
+}
+.s5-body strong { color: var(--dark-navy); font-weight: 700; }
+
+.s5-right {
+  background: var(--off-white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(48px,6vw,88px) clamp(48px,5.5vw,80px);
+  position: relative; z-index: 1; gap: clamp(14px,1.8vw,24px);
+}
+.s5-right-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--light-grey);
+  margin-bottom: clamp(4px,0.5vw,8px);
+}
+.s5-point {
+  display: flex; align-items: flex-start; gap: clamp(14px,1.5vw,20px);
+  padding: clamp(14px,1.6vw,20px) clamp(18px,2vw,26px);
+  border-radius: 12px; border: 1px solid rgba(26,26,230,0.1);
+  background: var(--white);
+}
+.s5-point-icon {
+  width: clamp(34px,3.4vw,44px); height: clamp(34px,3.4vw,44px);
+  border-radius: 10px; background: rgba(26,26,230,0.07);
+  border: 1px solid rgba(26,26,230,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(15px,1.6vw,20px); flex-shrink: 0;
+}
+.s5-point-text {}
+.s5-point-title { font-size: clamp(13px,1.25vw,16px); font-weight: 700; color: var(--dark-navy); margin-bottom: 4px; }
+.s5-point-sub { font-size: clamp(11px,1.05vw,13px); font-weight: 400; color: var(--light-grey); line-height: 1.5; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 06 — FOUR-YEAR ARC (VISUAL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-06 {
+  background: var(--white);
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+#slide-06::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(26,26,230,0.055) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+
+.s6-top {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; z-index: 2; position: relative;
+}
+.s6-top-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.s6-top-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.s6-top-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+/* Split body */
+.s6-body {
+  display: grid; grid-template-columns: 1fr 1.6fr;
+  position: relative; z-index: 1; overflow: hidden;
+}
+
+/* LHS — explanation */
+.s6-explain {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,4.5vw,64px) clamp(40px,5vw,72px);
+  border-right: 1px solid rgba(26,26,230,0.1);
+}
+.s6-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--deep-blue);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: clamp(16px,2vw,28px);
+}
+.s6-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--deep-blue); }
+.s6-headline {
+  font-size: clamp(24px,3.2vw,44px); font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--dark-navy);
+  margin-bottom: clamp(16px,2vw,26px);
+}
+.s6-headline .accent { color: var(--deep-blue); }
+.s6-body-text {
+  font-size: clamp(12px,1.2vw,16px); font-weight: 400; color: var(--mid-grey);
+  line-height: 1.75; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s6-body-text strong { color: var(--dark-navy); font-weight: 700; }
+.s6-meta {
+  display: flex; flex-direction: column; gap: clamp(8px,1vw,12px);
+}
+.s6-meta-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: clamp(11px,1.05vw,14px); font-weight: 500; color: var(--mid-grey);
+}
+.s6-meta-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* RHS — arc visualisation */
+.s6-visual {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: stretch;
+  padding: clamp(24px,3vw,40px) clamp(28px,3.5vw,52px) clamp(24px,3vw,40px) clamp(20px,2.5vw,36px);
+  position: relative;
+}
+
+/* Horizontal connecting line behind cards */
+.arc-line {
+  position: absolute;
+  top: 50%; left: clamp(28px,3.5vw,52px); right: clamp(28px,3.5vw,52px);
+  height: 2px;
+  background: linear-gradient(to right, rgba(123,123,232,0.35), rgba(26,26,230,0.7));
+  z-index: 1; pointer-events: none;
+  transform: translateY(calc(-50% + clamp(16px,2vw,26px)));
+}
+
+/* Arc grid — 4 columns */
+.arc-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px,1.2vw,18px);
+  width: 100%; position: relative; z-index: 2;
+  align-items: stretch;
+}
+
+/* Grade node */
+.grade-node {
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* Node dot */
+.node-dot {
+  width: clamp(12px,1.4vw,18px); height: clamp(12px,1.4vw,18px);
+  border-radius: 50%; border: 3px solid;
+  margin-bottom: clamp(10px,1.2vw,16px); flex-shrink: 0;
+  position: relative; z-index: 3;
+}
+.grade-node:nth-child(1) .node-dot { border-color: #7B7BE8; background: #7B7BE8; box-shadow: 0 0 0 5px rgba(123,123,232,0.15); }
+.grade-node:nth-child(2) .node-dot { border-color: #5555CC; background: #5555CC; box-shadow: 0 0 0 5px rgba(85,85,204,0.15); }
+.grade-node:nth-child(3) .node-dot { border-color: #3333CC; background: #3333CC; box-shadow: 0 0 0 5px rgba(51,51,204,0.15); }
+.grade-node:nth-child(4) .node-dot { border-color: #1A1AE6; background: #1A1AE6; box-shadow: 0 0 0 6px rgba(26,26,230,0.2); }
+
+/* Card — all equal height via flex */
+.grade-card {
+  width: 100%; flex: 1; border-radius: 14px;
+  padding: clamp(14px,1.8vw,22px) clamp(14px,1.6vw,20px);
+  display: flex; flex-direction: column; gap: clamp(6px,0.8vw,10px);
+  position: relative; overflow: hidden;
+}
+.grade-node:nth-child(1) .grade-card { background: rgba(123,123,232,0.07); border: 1px solid rgba(123,123,232,0.2); }
+.grade-node:nth-child(2) .grade-card { background: rgba(85,85,204,0.08);   border: 1px solid rgba(85,85,204,0.22); }
+.grade-node:nth-child(3) .grade-card { background: rgba(51,51,204,0.09);   border: 1px solid rgba(51,51,204,0.26); }
+.grade-node:nth-child(4) .grade-card { background: rgba(26,26,230,0.1);   border: 1px solid rgba(26,26,230,0.32); }
+
+/* Top shimmer */
+.grade-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.grade-node:nth-child(1) .grade-card::before { background: #A0A0F5; }
+.grade-node:nth-child(2) .grade-card::before { background: #7B7BE8; }
+.grade-node:nth-child(3) .grade-card::before { background: #5555CC; }
+.grade-node:nth-child(4) .grade-card::before { background: #1A1AE6; }
+
+.grade-label {
+  font-size: clamp(9px,0.82vw,10px); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--light-grey);
+}
+.grade-theme {
+  font-size: clamp(14px,1.7vw,22px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;
+  color: var(--dark-navy);
+}
+.grade-node:nth-child(1) .grade-theme { color: #5555BB; }
+.grade-node:nth-child(2) .grade-theme { color: #3333AA; }
+.grade-node:nth-child(3) .grade-theme { color: #2222AA; }
+.grade-node:nth-child(4) .grade-theme { color: var(--deep-blue); }
+
+.grade-question {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 400;
+  color: var(--light-grey); line-height: 1.5; font-style: italic;
+}
+.grade-units {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding-top: 4px;
+}
+.grade-unit-tag {
+  font-size: clamp(8px,0.78vw,9px); font-weight: 600; letter-spacing: 0.05em;
+  padding: 3px 8px; border-radius: 100px;
+  background: rgba(26,26,230,0.07); color: var(--mid-grey);
+  border: 1px solid rgba(26,26,230,0.12);
+}
+
+/* Year label */
+.grade-year {
+  margin-top: clamp(8px,1vw,12px);
+  font-size: clamp(10px,0.95vw,12px); font-weight: 600;
+  letter-spacing: 0.06em; color: var(--light-grey);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 07 — FIVE PILLARS (VISUAL)
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-07 {
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+#slide-07 .dot-grid::before { z-index: 0; }
+
+.s7-top-bar {
+  background: var(--deep-blue);
+  padding: clamp(18px,2.2vw,28px) clamp(48px,5.5vw,80px);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; z-index: 2; position: relative;
+}
+.s7-label {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--pale-blue);
+  display: flex; align-items: center; gap: 12px;
+}
+.s7-label::before { content: ''; display: block; width: 24px; height: 2px; background: var(--pale-blue); }
+.s7-title { font-size: clamp(13px,1.3vw,17px); font-weight: 700; color: var(--white); }
+
+.s7-pillars-area {
+  flex: 1; display: flex; flex-direction: column;
+  position: relative; z-index: 1;
+  padding: 0 clamp(32px,4vw,64px) 0;
+}
+
+/* Five columns */
+.pillars-row {
+  flex: 1; display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: clamp(8px,1vw,16px);
+  align-items: end;
+  padding-bottom: clamp(32px,4vw,56px);
+}
+
+.pillar-col {
+  display: flex; flex-direction: column; align-items: stretch;
+  position: relative;
+}
+
+/* The visual pillar — equal height via flex stretch */
+.pillar-tower {
+  width: 100%; flex: 1;
+  border-radius: 14px 14px 4px 4px;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding: clamp(18px,2.2vw,28px) clamp(14px,1.5vw,20px);
+  position: relative; overflow: hidden;
+  cursor: default;
+  transition: transform 0.2s ease;
+}
+.pillar-col:hover .pillar-tower { transform: translateY(-6px); }
+
+/* Heights equal across all pillars */
+.pillar-col:nth-child(1) .pillar-tower { background: linear-gradient(180deg, rgba(160,160,245,0.10) 0%, rgba(123,123,232,0.16) 100%); border: 1px solid rgba(123,123,232,0.22); }
+.pillar-col:nth-child(2) .pillar-tower { background: linear-gradient(180deg, rgba(123,123,232,0.12) 0%, rgba(85,85,204,0.20) 100%);  border: 1px solid rgba(100,100,210,0.26); }
+.pillar-col:nth-child(3) .pillar-tower { background: linear-gradient(180deg, rgba(85,85,204,0.14) 0%, rgba(51,51,204,0.24) 100%);   border: 1px solid rgba(68,68,200,0.30); }
+.pillar-col:nth-child(4) .pillar-tower { background: linear-gradient(180deg, rgba(51,51,204,0.16) 0%, rgba(26,26,230,0.26) 100%);   border: 1px solid rgba(40,40,220,0.32); }
+.pillar-col:nth-child(5) .pillar-tower { background: linear-gradient(180deg, rgba(26,26,230,0.18) 0%, rgba(20,20,180,0.30) 100%);   border: 1px solid rgba(26,26,230,0.38); }
+
+/* Top accent bar */
+.pillar-tower::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  border-radius: 14px 14px 0 0;
+}
+.pillar-col:nth-child(1) .pillar-tower::before { background: #A0A0F5; }
+.pillar-col:nth-child(2) .pillar-tower::before { background: #8080E8; }
+.pillar-col:nth-child(3) .pillar-tower::before { background: #5555CC; }
+.pillar-col:nth-child(4) .pillar-tower::before { background: #3333CC; }
+.pillar-col:nth-child(5) .pillar-tower::before { background: #1A1AE6; }
+
+/* Pillar number */
+.pillar-n {
+  font-size: clamp(36px,5vw,64px); font-weight: 800; line-height: 1;
+  letter-spacing: -0.04em; margin-bottom: clamp(12px,1.5vw,20px);
+  opacity: 0.15;
+}
+.pillar-col:nth-child(1) .pillar-n { color: #7B7BE8; }
+.pillar-col:nth-child(2) .pillar-n { color: #5555CC; }
+.pillar-col:nth-child(3) .pillar-n { color: #3333CC; }
+.pillar-col:nth-child(4) .pillar-n { color: #1A1AE6; }
+.pillar-col:nth-child(5) .pillar-n { color: #1A1AE6; }
+
+.pillar-name-text {
+  font-size: clamp(13px,1.4vw,18px); font-weight: 800; line-height: 1.2;
+  letter-spacing: -0.01em; color: var(--dark-navy);
+  margin-bottom: clamp(8px,1vw,14px);
+}
+.pillar-desc-text {
+  font-size: clamp(11px,1.05vw,13px); font-weight: 400;
+  color: var(--light-grey); line-height: 1.55;
+}
+
+/* Baseline bar */
+.pillars-baseline {
+  height: 3px; width: 100%;
+  background: linear-gradient(to right, rgba(160,160,245,0.4), rgba(26,26,230,0.8));
+  border-radius: 2px; flex-shrink: 0;
+  margin-bottom: clamp(16px,2vw,28px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 08 — WHAT A GRADUATE CAN DO
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-08 {
+  background: var(--white);
+  display: grid; grid-template-rows: auto 1fr;
+  position: relative;
+}
+#slide-08.dot-grid::before { z-index: 0; }
+
+.s8-body {
+  display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; z-index: 1; flex: 1;
+}
+.s8-left {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(40px,5vw,72px) clamp(48px,5.5vw,80px);
+  position: relative; overflow: hidden;
+}
+.s8-left::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 48px 48px; pointer-events: none;
+}
+.s8-left-inner { position: relative; z-index: 1; }
+
+.s8-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s8-eyebrow::before { content: ''; display: block; width: 32px; height: 2px; background: var(--periwinkle); }
+
+.s8-headline {
+  font-size: clamp(28px,4.2vw,58px); font-weight: 800;
+  line-height: 1.08; letter-spacing: -0.03em; color: var(--white);
+  margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s8-headline .accent { color: var(--pale-blue); }
+
+.s8-sub {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 300;
+  color: rgba(255,255,255,0.5); line-height: 1.7;
+}
+.s8-sub strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+/* Ghost grade motif */
+.s8-ghost {
+  position: absolute; bottom: -20px; right: -20px;
+  font-size: clamp(120px,18vw,220px); font-weight: 800; line-height: 1;
+  color: rgba(255,255,255,0.03); letter-spacing: -0.05em;
+  pointer-events: none; user-select: none;
+}
+
+.s8-right {
+  background: var(--off-white);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,4.5vw,64px) clamp(48px,5.5vw,80px);
+  gap: clamp(12px,1.4vw,18px);
+}
+
+.s8-competency {
+  display: flex; align-items: flex-start; gap: clamp(14px,1.5vw,20px);
+  padding: clamp(14px,1.6vw,20px) clamp(18px,2vw,24px);
+  border-radius: 12px; background: var(--white);
+  border: 1px solid rgba(26,26,230,0.08);
+}
+.s8-pillar-tag {
+  flex-shrink: 0; padding: 4px 10px; border-radius: 6px;
+  font-size: clamp(9px,0.85vw,10px); font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; white-space: nowrap; margin-top: 2px;
+}
+.tag-p1 { background: rgba(160,160,245,0.15); color: #5555AA; }
+.tag-p2 { background: rgba(123,123,232,0.12); color: #4444BB; }
+.tag-p3 { background: rgba(85,85,204,0.12); color: #3333AA; }
+.tag-p4 { background: rgba(51,51,204,0.12); color: #2222AA; }
+.tag-p5 { background: rgba(26,26,230,0.1); color: var(--deep-blue); }
+
+.s8-comp-text {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 500;
+  color: var(--dark-navy); line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE 09 — PROGRAMME AT A GLANCE
+   ═══════════════════════════════════════════════════════════════════════════ */
+#slide-09 {
+  background: var(--dark-navy);
+  display: flex; flex-direction: column;
+}
+
+.s9-main {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+  position: relative; z-index: 1;
+}
+.s9-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(36px,4.5vw,64px) clamp(40px,5vw,72px);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+#slide-09::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+.s9-eyebrow {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--periwinkle);
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(20px,2.5vw,36px);
+}
+.s9-eyebrow::before { content: ''; display: block; width: 32px; height: 2px; background: var(--periwinkle); }
+.s9-headline {
+  font-size: clamp(30px,4.5vw,62px); font-weight: 800; line-height: 1.08;
+  letter-spacing: -0.03em; color: var(--white); margin-bottom: clamp(16px,2vw,28px);
+}
+.s9-headline .accent { color: var(--pale-blue); }
+.s9-sub {
+  font-size: clamp(13px,1.3vw,17px); font-weight: 300;
+  color: rgba(255,255,255,0.45); line-height: 1.7; max-width: 420px;
+}
+.s9-sub strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+
+/* Badge progression strip */
+.badge-strip {
+  display: flex; align-items: center; gap: 0; margin-top: clamp(16px,2vw,28px);
+}
+.badge-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.badge-circle {
+  width: clamp(36px,4vw,52px); height: clamp(36px,4vw,52px); border-radius: 50%;
+  border: 2px solid; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(11px,1.1vw,14px); font-weight: 800; color: var(--white);
+}
+.badge-item:nth-child(1) .badge-circle { border-color: #A0A0F5; background: rgba(160,160,245,0.15); color: #A0A0F5; }
+.badge-item:nth-child(3) .badge-circle { border-color: #7B7BE8; background: rgba(123,123,232,0.15); color: #7B7BE8; }
+.badge-item:nth-child(5) .badge-circle { border-color: #3333CC; background: rgba(51,51,204,0.15); color: #9090E0; }
+.badge-item:nth-child(7) .badge-circle { border-color: #1A1AE6; background: rgba(26,26,230,0.2); }
+.badge-item:nth-child(7) .badge-circle { color: var(--pale-blue); }
+.badge-label { font-size: clamp(9px,0.85vw,10px); font-weight: 600; letter-spacing: 0.06em; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+.badge-arrow {
+  width: clamp(20px,2.5vw,36px); height: 2px;
+  background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+  margin: 0 4px; margin-bottom: 22px;
+}
+
+.s9-right {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(28px,3.5vw,52px) clamp(40px,5vw,72px);
+  gap: clamp(6px,0.7vw,10px);
+}
+.s9-param {
+  display: flex; align-items: center; gap: clamp(12px,1.4vw,20px);
+  padding: clamp(10px,1.1vw,15px) clamp(14px,1.6vw,22px);
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+}
+.s9-param-label {
+  font-size: clamp(9px,0.85vw,11px); font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  min-width: clamp(80px,8.5vw,115px); flex-shrink: 0;
+}
+.s9-param-val {
+  font-size: clamp(12px,1.15vw,15px); font-weight: 600; color: var(--white);
+}
+.s9-param-detail {
+  font-size: clamp(10px,0.95vw,12px); font-weight: 400; color: rgba(255,255,255,0.4); margin-top: 2px;
+}
+.s9-param-divider { width: 1px; height: 18px; background: rgba(255,255,255,0.08); flex-shrink: 0; }
+
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ═══ SLIDE 04 — SECTION DIVIDER ═══════════════════════════════════ -->
+  <div class="slide active" id="slide-04">
+    <div class="s4-accent-line"></div>
+    <div class="section-bg-num">02</div>
+    <div class="s4-content">
+      <div class="s4-kicker">Section Two</div>
+      <div class="s4-title">The<br><span class="blue">Programme</span></div>
+      <p class="s4-desc">
+        What we teach. How we teach it. Why it compounds across four years into something genuinely rare — a student who can think, build, and act in an AI-first world.
+      </p>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 04 / 32</div>
+  </div>
+
+  <!-- ═══ SLIDE 05 — NOT A TECHNOLOGY COURSE ═══════════════════════════ -->
+  <div class="slide" id="slide-05">
+    <div class="s5-left">
+      <div class="s5-eyebrow">The Core Idea</div>
+      <h2 class="s5-headline">
+        Not a technology<br>course. A <span class="accent">thinking</span><br>course.
+      </h2>
+      <p class="s5-body">
+        Every session, every tool, and every assessment is designed to build
+        <strong>five compounding capabilities.</strong> By Grade 9, a student
+        can think clearly under ambiguity, direct AI with precision, build
+        functional digital products, and defend their work — ethically and
+        publicly — in front of a panel.
+      </p>
+    </div>
+    <div class="s5-right">
+      <div class="s5-right-label">What makes this different</div>
+      <div class="s5-point">
+        <div class="s5-point-icon">🧠</div>
+        <div class="s5-point-text">
+          <div class="s5-point-title">Logical reasoning as the spine</div>
+          <div class="s5-point-sub">Not a module — the thread woven through every session of every year</div>
+        </div>
+      </div>
+      <div class="s5-point">
+        <div class="s5-point-icon">📈</div>
+        <div class="s5-point-text">
+          <div class="s5-point-title">Compound, not modular</div>
+          <div class="s5-point-sub">Each year requires mastery of the previous — no year stands alone</div>
+        </div>
+      </div>
+      <div class="s5-point">
+        <div class="s5-point-icon">🔨</div>
+        <div class="s5-point-text">
+          <div class="s5-point-title">Students build real things</div>
+          <div class="s5-point-sub">A school-useful app, a team mini-project, and an individual capstone</div>
+        </div>
+      </div>
+      <div class="s5-point">
+        <div class="s5-point-icon">⚖️</div>
+        <div class="s5-point-text">
+          <div class="s5-point-title">Ethics from Day 1</div>
+          <div class="s5-point-sub">Not a final chapter — responsibility is woven through every grade</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge on-white">Campuslogix AI Aspire &nbsp;·&nbsp; 05 / 32</div>
+  </div>
+
+  <!-- ═══ SLIDE 06 — FOUR-YEAR ARC ════════════════════════════════════ -->
+  <div class="slide" id="slide-06">
+    <div class="s6-top">
+      <div class="s6-top-label">The Journey</div>
+      <div class="s6-top-title">Four Years. Four Chapters. One Direction.</div>
+    </div>
+    <div class="s6-body">
+
+      <!-- LHS — explanation -->
+      <div class="s6-explain">
+        <div class="s6-eyebrow">How It Compounds</div>
+        <h2 class="s6-headline">Each year<br>earns the<br><span class="accent">next one.</span></h2>
+        <p class="s6-body-text">
+          The programme is not four standalone courses.
+          It is <strong>one four-year journey</strong> — each grade requires
+          mastery of the previous. A student who starts in Grade 6
+          arrives at Grade 9 with compounded capability that cannot
+          be rushed or replicated in a single year.
+        </p>
+        <div class="s6-meta">
+          <div class="s6-meta-item">
+            <div class="s6-meta-dot" style="background:#A0A0F5"></div>
+            Grade 6 — foundations in reasoning and AI literacy
+          </div>
+          <div class="s6-meta-item">
+            <div class="s6-meta-dot" style="background:#7B7BE8"></div>
+            Grade 7 — deep understanding and structured prompting
+          </div>
+          <div class="s6-meta-item">
+            <div class="s6-meta-dot" style="background:#3333CC"></div>
+            Grade 8 — real-world application and vibe coding
+          </div>
+          <div class="s6-meta-item">
+            <div class="s6-meta-dot" style="background:#1A1AE6"></div>
+            Grade 9 — critical evaluation and capstone creation
+          </div>
+        </div>
+      </div>
+
+      <!-- RHS — arc visualisation -->
+      <div class="s6-visual">
+        <div class="arc-line"></div>
+        <div class="arc-grid">
+
+          <div class="grade-node">
+            <div class="node-dot"></div>
+            <div class="grade-card">
+              <div class="grade-label">Grade 6</div>
+              <div class="grade-theme">DISCOVER</div>
+              <div class="grade-question">"What is AI? How does it think?"</div>
+              <div class="grade-units">
+                <span class="grade-unit-tag">Logical Reasoning</span>
+                <span class="grade-unit-tag">What is AI?</span>
+                <span class="grade-unit-tag">First Prompts</span>
+                <span class="grade-unit-tag">Ethics Intro</span>
+              </div>
+            </div>
+            <div class="grade-year">Age 11–12</div>
+          </div>
+
+          <div class="grade-node">
+            <div class="node-dot"></div>
+            <div class="grade-card">
+              <div class="grade-label">Grade 7</div>
+              <div class="grade-theme">UNDERSTAND</div>
+              <div class="grade-question">"How does AI learn? What is data?"</div>
+              <div class="grade-units">
+                <span class="grade-unit-tag">How AI Learns</span>
+                <span class="grade-unit-tag">Data Literacy</span>
+                <span class="grade-unit-tag">RCT Prompting</span>
+                <span class="grade-unit-tag">AI in India</span>
+              </div>
+            </div>
+            <div class="grade-year">Age 12–13</div>
+          </div>
+
+          <div class="grade-node">
+            <div class="node-dot"></div>
+            <div class="grade-card">
+              <div class="grade-label">Grade 8</div>
+              <div class="grade-theme">APPLY</div>
+              <div class="grade-question">"How do I work with AI as a tool?"</div>
+              <div class="grade-units">
+                <span class="grade-unit-tag">Chain Prompting</span>
+                <span class="grade-unit-tag">Vibe Coding</span>
+                <span class="grade-unit-tag">Mini-Project</span>
+                <span class="grade-unit-tag">Accountability</span>
+              </div>
+            </div>
+            <div class="grade-year">Age 13–14</div>
+          </div>
+
+          <div class="grade-node">
+            <div class="node-dot"></div>
+            <div class="grade-card">
+              <div class="grade-label">Grade 9</div>
+              <div class="grade-theme">EVALUATE<br>&amp; CREATE</div>
+              <div class="grade-question">"How do I think critically about AI and build with it?"</div>
+              <div class="grade-units">
+                <span class="grade-unit-tag">System Prompts</span>
+                <span class="grade-unit-tag">Creative AI</span>
+                <span class="grade-unit-tag">AI &amp; Society</span>
+                <span class="grade-unit-tag">Capstone</span>
+              </div>
+            </div>
+            <div class="grade-year">Age 14–15</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    <div class="slide-badge on-white">Campuslogix AI Aspire &nbsp;·&nbsp; 06 / 32</div>
+  </div>
+
+  <!-- ═══ SLIDE 07 — FIVE PILLARS ══════════════════════════════════════ -->
+  <div class="slide dot-grid" id="slide-07">
+    <div class="s7-top-bar">
+      <div class="s7-label">The Framework</div>
+      <div class="s7-title">Five Pillars. Built to Last.</div>
+    </div>
+    <div class="s7-pillars-area">
+      <div class="pillars-row">
+
+        <div class="pillar-col">
+          <div class="pillar-tower">
+            <div class="pillar-n">01</div>
+            <div class="pillar-name-text">Think<br>Clearly</div>
+            <div class="pillar-desc-text">Logical reasoning and structured problem-solving — the foundation everything else rests on.</div>
+          </div>
+        </div>
+
+        <div class="pillar-col">
+          <div class="pillar-tower">
+            <div class="pillar-n">02</div>
+            <div class="pillar-name-text">Understand the Landscape</div>
+            <div class="pillar-desc-text">AI literacy and conceptual fluency — not just what AI does, but how it works and where it fails.</div>
+          </div>
+        </div>
+
+        <div class="pillar-col">
+          <div class="pillar-tower">
+            <div class="pillar-n">03</div>
+            <div class="pillar-name-text">Work<br>With AI</div>
+            <div class="pillar-desc-text">Prompt engineering — from basic instruction-writing to system prompts and meta-prompting.</div>
+          </div>
+        </div>
+
+        <div class="pillar-col">
+          <div class="pillar-tower">
+            <div class="pillar-n">04</div>
+            <div class="pillar-name-text">Build<br>With AI</div>
+            <div class="pillar-desc-text">Vibe coding and AI-assisted creation — from a first web page to a full multi-modal capstone.</div>
+          </div>
+        </div>
+
+        <div class="pillar-col">
+          <div class="pillar-tower">
+            <div class="pillar-n">05</div>
+            <div class="pillar-name-text">Think Responsibly</div>
+            <div class="pillar-desc-text">AI ethics and digital citizenship — woven through every grade, not saved for last.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="pillars-baseline"></div>
+    </div>
+    <div class="slide-badge on-white">Campuslogix AI Aspire &nbsp;·&nbsp; 07 / 32</div>
+  </div>
+
+  <!-- ═══ SLIDE 08 — WHAT A GRADUATE CAN DO ════════════════════════════ -->
+  <div class="slide dot-grid" id="slide-08">
+    <div class="top-bar">
+      <div class="top-bar-label">The Outcome</div>
+      <div class="top-bar-title">What a Completed Student Looks Like</div>
+    </div>
+    <div class="s8-body">
+      <div class="s8-left">
+        <div class="s8-ghost">G9</div>
+        <div class="s8-left-inner">
+          <div class="s8-eyebrow">Four years in. What changes.</div>
+          <h2 class="s8-headline">
+            Capabilities most<br>adults in the<br>workforce<br><span class="accent">don't yet have.</span>
+          </h2>
+          <p class="s8-sub">
+            A student who finishes all four grades holds something that cannot be faked in an interview or an exam —
+            <strong>demonstrated, practised, panel-defended capability.</strong>
+          </p>
+        </div>
+      </div>
+      <div class="s8-right">
+        <div class="s8-competency">
+          <div class="s8-pillar-tag tag-p1">Pillar 1</div>
+          <div class="s8-comp-text">Solve complex problems by decomposing them into structured steps — and explain their reasoning, not just their answer.</div>
+        </div>
+        <div class="s8-competency">
+          <div class="s8-pillar-tag tag-p2">Pillar 2</div>
+          <div class="s8-comp-text">Evaluate any AI claim — from a news article, a product pitch, or a policy brief — for accuracy, bias, and intent.</div>
+        </div>
+        <div class="s8-competency">
+          <div class="s8-pillar-tag tag-p3">Pillar 3</div>
+          <div class="s8-comp-text">Design and deploy system prompts, chain prompts, and a personal Prompt Toolkit — across every tool they use.</div>
+        </div>
+        <div class="s8-competency">
+          <div class="s8-pillar-tag tag-p4">Pillar 4</div>
+          <div class="s8-comp-text">Build a working multi-modal AI project — vibe-coded app, AI voice, AI video — and present it to a live panel.</div>
+        </div>
+        <div class="s8-competency">
+          <div class="s8-pillar-tag tag-p5">Pillar 5</div>
+          <div class="s8-comp-text">Conduct a full ethical review of any AI product brief — identifying harms, accountability gaps, and safeguards.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge on-white">Campuslogix AI Aspire &nbsp;·&nbsp; 08 / 32</div>
+  </div>
+
+  <!-- ═══ SLIDE 09 — PROGRAMME AT A GLANCE ═════════════════════════════ -->
+  <div class="slide" id="slide-09">
+    <div class="top-bar">
+      <div class="top-bar-label">Delivery</div>
+      <div class="top-bar-title">Programme at a Glance</div>
+    </div>
+    <div class="s9-main">
+      <div class="s9-left">
+        <div class="s9-eyebrow">The credential pathway</div>
+        <h2 class="s9-headline">
+          One badge<br>per year.<br>One <span class="accent">certificate</span><br>to close it.
+        </h2>
+        <p class="s9-sub">
+          Students earn a <strong>stackable Campuslogix AI Aspire badge</strong> each grade. Completing all four earns the
+          <strong>AI Foundation Certificate</strong> — evidence of compounded, four-year capability.
+        </p>
+        <div class="badge-strip">
+          <div class="badge-item">
+            <div class="badge-circle">G6</div>
+            <div class="badge-label">Badge</div>
+          </div>
+          <div class="badge-arrow"></div>
+          <div class="badge-item">
+            <div class="badge-circle">G7</div>
+            <div class="badge-label">Badge</div>
+          </div>
+          <div class="badge-arrow"></div>
+          <div class="badge-item">
+            <div class="badge-circle">G8</div>
+            <div class="badge-label">Badge</div>
+          </div>
+          <div class="badge-arrow"></div>
+          <div class="badge-item">
+            <div class="badge-circle">G9</div>
+            <div class="badge-label">Certificate</div>
+          </div>
+        </div>
+      </div>
+      <div class="s9-right">
+        <div class="s9-param">
+          <div class="s9-param-label">Duration</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">4 Academic Years</div>
+            <div class="s9-param-detail">Grade 6 through Grade 9 · June to December each year</div>
+          </div>
+        </div>
+        <div class="s9-param">
+          <div class="s9-param-label">Sessions</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">28 Sessions Per Year</div>
+            <div class="s9-param-detail">1.5 hours per session · ~42 instructional hours per grade</div>
+          </div>
+        </div>
+        <div class="s9-param">
+          <div class="s9-param-label">Total Hours</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">168 Hours</div>
+            <div class="s9-param-detail">Across the full four-year programme</div>
+          </div>
+        </div>
+        <div class="s9-param">
+          <div class="s9-param-label">Alignment</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">Board-Agnostic · NEP 2020 Compatible</div>
+            <div class="s9-param-detail">Competency-based outcomes · Fits existing timetables</div>
+          </div>
+        </div>
+        <div class="s9-param">
+          <div class="s9-param-label">Assessment</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">3 Quizzes + Mid-Year + Final</div>
+            <div class="s9-param-detail">Plus portfolio artefacts and live showcase each year</div>
+          </div>
+        </div>
+        <div class="s9-param">
+          <div class="s9-param-label">Target</div>
+          <div class="s9-param-divider"></div>
+          <div>
+            <div class="s9-param-val">Schools with Infrastructure</div>
+            <div class="s9-param-detail">Reliable internet · Capacity for school-managed tool accounts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-badge">Campuslogix AI Aspire &nbsp;·&nbsp; 09 / 32</div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<div class="nav-dots" id="dots"></div>
+<button class="nav-arrow up"   id="btn-up"   disabled>&#8593;</button>
+<button class="nav-arrow down" id="btn-down">&#8595;</button>
+
+<script>
+const slides  = Array.from(document.querySelectorAll('.slide'));
+const dotsEl  = document.getElementById('dots');
+const btnUp   = document.getElementById('btn-up');
+const btnDown = document.getElementById('btn-down');
+let current   = 0;
+
+// Build dots
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  d.setAttribute('aria-label', 'Slide ' + (i + 1));
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+const dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+function goTo(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+  const leaving = slides[current];
+  leaving.classList.remove('active');
+  leaving.classList.add('prev');
+  setTimeout(() => leaving.classList.remove('prev'), 500);
+
+  current = idx;
+  slides[current].classList.remove('prev');
+  slides[current].classList.add('active');
+
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  btnUp.disabled   = current === 0;
+  btnDown.disabled = current === slides.length - 1;
+}
+
+btnUp.addEventListener('click',   () => goTo(current - 1));
+btnDown.addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+  if (['ArrowUp','ArrowLeft'].includes(e.key))         { e.preventDefault(); goTo(current - 1); }
+});
+
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const dy = e.changedTouches[0].clientY - tx;
+  if (Math.abs(dy) > 50) { dy < 0 ? goTo(current + 1) : goTo(current - 1); }
+});
+</script>
+</body>
+</html>
