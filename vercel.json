@@ -1,13 +1,13 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/campuslogix_deck_master.html" }
-  ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*).html",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
+      "src": "/",
+      "dest": "/campuslogix_deck_master.html",
+      "headers": { "Content-Type": "text/html; charset=utf-8" }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
