@@ -3656,6 +3656,47 @@ html,body{overflow:hidden!important;height:100%!important}
 .slide-badge{display:none!important}
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   PRINT / PDF EXPORT
+   Open in Chrome → File → Print → Save as PDF
+   Set: Paper A4 Landscape, Margins None, Scale 100%, Background graphics ON
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+
+  /* Reset scroll-lock so all slides flow vertically */
+  html, body { overflow: visible !important; height: auto !important; }
+  .deck      { overflow: visible !important; height: auto !important;
+               width: 100% !important; position: static !important; }
+
+  /* Every slide becomes a full page */
+  .slide {
+    position: relative !important;
+    top: auto !important; left: auto !important;
+    width: 100% !important;
+    height: 100vh !important;
+    min-height: unset !important;
+    transform: none !important;
+    transition: none !important;
+    display: block !important;
+    overflow: hidden !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* Show all slides regardless of active/prev state */
+  .slide, .slide.active, .slide.prev { opacity: 1 !important; }
+
+  /* Last slide: no trailing blank page */
+  .slide:last-child { page-break-after: avoid; break-after: avoid; }
+
+  /* Hide interactive elements */
+  .nav-dots, .slide-badge, .tab-strip { display: none !important; }
+
+  /* Show all tab panels stacked */
+  .tab-panel { display: grid !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    MOBILE RESPONSIVE — ≤ 768px
    ═══════════════════════════════════════════════════════════════════════════ */
 @media(max-width:768px){
