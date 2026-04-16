@@ -8,6 +8,8 @@
 </head>
 <body>
 
+  <div id="serverBanner" class="server-banner" hidden></div>
+
   <header class="header">
     <img src="assets/mellone_logo.png" alt="Mellone" class="header-logo" onerror="this.style.display='none'" />
     <div>
@@ -16,14 +18,10 @@
     </div>
   </header>
 
-  <div id="serverBanner" class="server-banner" hidden>
-    Server not running &mdash; open a terminal and run: <code>node server.js</code> inside the <code>offer-letter-tool</code> folder, then refresh this page.
-  </div>
-
   <main class="container">
     <div class="card">
       <h1 class="card-title">Generate an Offer Letter</h1>
-      <p class="card-desc">Fill in the candidate details below. All fields are required unless marked optional. Click Generate to download a branded A4 PDF.</p>
+      <p class="card-desc">Fill in the candidate details below. All fields are required. Click Preview to review, then Generate PDF to download.</p>
 
       <form id="offerForm" method="post" enctype="multipart/form-data" novalidate>
 
@@ -46,10 +44,22 @@
               <input type="text" id="department" name="department" placeholder="e.g. Learning & Development" autocomplete="off" />
               <span class="error-msg" id="err-department">Please enter the department.</span>
             </div>
+          </div>
+        </div>
+
+        <!-- REPORTING MANAGER -->
+        <div class="form-section">
+          <div class="section-label">Reporting Manager</div>
+          <div class="field-grid">
             <div class="field">
-              <label for="reportingManager">Reporting Manager — Name &amp; Designation <span class="req">*</span></label>
-              <input type="text" id="reportingManager" name="reportingManager" placeholder="e.g. Rakesh Venugopal, Founder" autocomplete="off" />
-              <span class="error-msg" id="err-reportingManager">Please enter the reporting manager details.</span>
+              <label for="reportingManagerName">Manager Name <span class="req">*</span></label>
+              <input type="text" id="reportingManagerName" name="reportingManagerName" placeholder="e.g. Rakesh Venugopal" autocomplete="off" />
+              <span class="error-msg" id="err-reportingManagerName">Please enter the manager's name.</span>
+            </div>
+            <div class="field">
+              <label for="reportingManagerDesignation">Manager Designation <span class="req">*</span></label>
+              <input type="text" id="reportingManagerDesignation" name="reportingManagerDesignation" placeholder="e.g. Founder" autocomplete="off" />
+              <span class="error-msg" id="err-reportingManagerDesignation">Please enter the manager's designation.</span>
             </div>
           </div>
         </div>
@@ -65,7 +75,7 @@
             </div>
             <div class="field">
               <label for="totalCTC">Total CTC — Annual <span class="req">*</span></label>
-              <input type="text" id="totalCTC" name="totalCTC" placeholder="e.g. ₹18,00,000" autocomplete="off" />
+              <input type="text" id="totalCTC" name="totalCTC" placeholder="e.g. 18,00,000" autocomplete="off" />
               <span class="error-msg" id="err-totalCTC">Please enter the total CTC.</span>
             </div>
             <div class="field">
@@ -76,19 +86,8 @@
             <div class="field">
               <label for="acceptanceDeadline">Offer Acceptance Deadline <span class="req">*</span></label>
               <input type="date" id="acceptanceDeadline" name="acceptanceDeadline" />
+              <span class="field-hint">Auto-set to offer date + 2 days. You can adjust.</span>
               <span class="error-msg" id="err-acceptanceDeadline">Please select an acceptance deadline.</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- SIGNATURE -->
-        <div class="form-section">
-          <div class="section-label">Founder Signature</div>
-          <div class="field-grid single">
-            <div class="field">
-              <label for="founderSignature">Signature Image <span class="opt">(optional — JPEG only)</span></label>
-              <input type="file" id="founderSignature" name="founderSignature" accept="image/jpeg" />
-              <span class="field-hint">If not uploaded, the printed name will appear without an image.</span>
             </div>
           </div>
         </div>
@@ -118,24 +117,35 @@
     const banner     = document.getElementById('serverBanner');
 
     const requiredFields = [
-      'candidateName', 'jobTitle', 'department', 'reportingManager',
+      'candidateName', 'jobTitle', 'department',
+      'reportingManagerName', 'reportingManagerDesignation',
       'dateOfJoining', 'totalCTC', 'offerDate', 'acceptanceDeadline',
     ];
 
     // ── Detect file:// vs http:// ─────────────────────────────────────────────
     if (window.location.protocol === 'file:') {
       banner.hidden = false;
-      banner.innerHTML = '<strong>Wrong URL.</strong> This page must be opened via the server, not as a file. ' +
+      banner.innerHTML = '<strong>Wrong URL.</strong> Open this via the server, not as a file. ' +
         'Run <code>node server.js</code> in the <code>offer-letter-tool</code> folder, then visit ' +
-        '<a href="http://localhost:3000" target="_blank">http://localhost:3000</a> in your browser.';
+        '<a href="http://localhost:3000" target="_blank">http://localhost:3000</a>.';
     } else {
-      // ── Server health check on load ────────────────────────────────────────
-      fetch('/health').then(r => {
-        if (r.ok) banner.hidden = true;
-      }).catch(() => {
+      fetch('/health').then(r => { if (r.ok) banner.hidden = true; }).catch(() => {
         banner.hidden = false;
+        banner.textContent = 'Server not running — run node server.js then refresh.';
       });
     }
+
+    // ── Auto-populate acceptance deadline = offer date + 2 days ──────────────
+    document.getElementById('offerDate').addEventListener('change', function () {
+      const deadline = document.getElementById('acceptanceDeadline');
+      if (this.value) {
+        const d = new Date(this.value);
+        d.setDate(d.getDate() + 2);
+        deadline.value = d.toISOString().split('T')[0];
+        deadline.classList.remove('error');
+        document.getElementById('err-acceptanceDeadline').classList.remove('visible');
+      }
+    });
 
     // ── Toast ────────────────────────────────────────────────────────────────
     function showToast(msg, isError = false, duration = 5000) {
@@ -161,7 +171,6 @@
         }
       });
       if (!valid) {
-        // Scroll to first error
         document.querySelector('input.error').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       return valid;
@@ -174,30 +183,20 @@
       });
     });
 
-    // ── Preview — direct native form POST to _blank ──────────────────────────
-    // This avoids popup blockers entirely. The browser opens the response
-    // HTML directly in a new tab without any JS window.open() call.
+    // ── Preview — native form POST to _blank (never blocked by popup blockers) ─
     previewBtn.addEventListener('click', () => {
-      if (!validate()) {
-        showToast('Fill in all required fields first.', true);
-        return;
-      }
-      // Temporarily point the form at /preview and open in new tab
+      if (!validate()) { showToast('Fill in all required fields first.', true); return; }
       form.action = '/preview';
       form.target = '_blank';
       form.submit();
-      // Restore so the submit button still hits /generate-pdf via fetch
-      form.action   = '';
-      form.target   = '';
+      form.action = '';
+      form.target = '';
     });
 
-    // ── Generate PDF — fetch + stream download ───────────────────────────────
+    // ── Generate PDF ──────────────────────────────────────────────────────────
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!validate()) {
-        showToast('Fill in all required fields.', true);
-        return;
-      }
+      if (!validate()) { showToast('Fill in all required fields.', true); return; }
 
       btn.classList.add('loading');
       btn.disabled = true;
@@ -212,30 +211,21 @@
         }
 
         const blob = await response.blob();
-
-        // Build filename
-        const candidateName = document.getElementById('candidateName').value.trim().replace(/\s+/g, '_');
-        const doj = document.getElementById('dateOfJoining').value; // YYYY-MM-DD
+        const name = document.getElementById('candidateName').value.trim().replace(/\s+/g, '_');
+        const doj  = document.getElementById('dateOfJoining').value;
         const [y, m, d] = doj.split('-');
-        const filename = `Offer_Letter_${candidateName}_${d}${m}${y}.pdf`;
+        const filename = `Offer_Letter_${name}_${d}${m}${y}.pdf`;
 
-        // Trigger download
         const url = URL.createObjectURL(blob);
         const a   = document.createElement('a');
-        a.href     = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-        showToast('Offer letter downloaded successfully!');
+        showToast('Offer letter downloaded!');
       } catch (err) {
-        const isNetworkError = err.message.includes('fetch') || err.message.includes('Failed');
-        const msg = isNetworkError
-          ? 'Cannot reach server. Is `node server.js` running?'
-          : 'Error: ' + err.message;
-        showToast(msg, true, 8000);
+        const isNet = err.message.includes('fetch') || err.message.includes('Failed');
+        showToast(isNet ? 'Cannot reach server. Is node server.js running?' : 'Error: ' + err.message, true, 8000);
       } finally {
         btn.classList.remove('loading');
         btn.disabled = false;

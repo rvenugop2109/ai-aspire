@@ -10,59 +10,61 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const templatePath = path.join(__dirname, 'templates', 'offer_letter.html');
-const logoPath = path.join(__dirname, 'public', 'assets', 'mellone_logo.png');
+const templatePath  = path.join(__dirname, 'templates', 'offer_letter.html');
+const logoPath      = path.join(__dirname, 'public', 'assets', 'mellone_logo.png');
+const signaturePath = path.join(__dirname, 'public', 'assets', 'founder_signature.png');
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 
 function fmt(dateStr) {
   if (!dateStr) return '';
-  // Input is YYYY-MM-DD from date picker; parse as local date to avoid UTC offset shift
   const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
 }
 
-function getLogoDataUri() {
-  if (fs.existsSync(logoPath)) {
-    const buf = fs.readFileSync(logoPath);
-    return `data:image/png;base64,${buf.toString('base64')}`;
-  }
-  return '';
+function asDataUri(filePath, mime) {
+  if (!fs.existsSync(filePath)) return '';
+  const buf = fs.readFileSync(filePath);
+  return `data:${mime};base64,${buf.toString('base64')}`;
 }
 
-function buildSignatureHtml(file) {
-  if (file && file.mimetype === 'image/jpeg') {
-    const dataUri = `data:image/jpeg;base64,${file.buffer.toString('base64')}`;
-    return `<img src="${dataUri}" alt="Founder Signature" class="sig-image" />`;
-  }
-  return '<div class="sig-line"></div>';
-}
-
-function buildHtml(body, signatureHtml, logoDataUri) {
+function buildHtml(body) {
   const {
     candidateName,
     jobTitle,
     department,
-    reportingManager,
+    reportingManagerName,
+    reportingManagerDesignation,
     dateOfJoining,
     totalCTC,
     offerDate,
     acceptanceDeadline,
   } = body;
 
+  const reportingManager = reportingManagerDesignation
+    ? `${reportingManagerName}, ${reportingManagerDesignation}`
+    : reportingManagerName || '';
+
+  const logoDataUri = asDataUri(logoPath, 'image/png');
+  const sigDataUri  = asDataUri(signaturePath, 'image/png');
+
+  const signatureHtml = sigDataUri
+    ? `<img src="${sigDataUri}" alt="Founder Signature" class="sig-image" />`
+    : '<div class="sig-line"></div>';
+
   let html = fs.readFileSync(templatePath, 'utf8');
 
   return html
-    .replace(/{{CANDIDATE_NAME}}/g, candidateName || '')
-    .replace(/{{JOB_TITLE}}/g, jobTitle || '')
-    .replace(/{{DEPARTMENT}}/g, department || '')
-    .replace(/{{REPORTING_MANAGER}}/g, reportingManager || '')
-    .replace(/{{DATE_OF_JOINING}}/g, fmt(dateOfJoining))
-    .replace(/{{TOTAL_CTC}}/g, totalCTC || '')
-    .replace(/{{OFFER_DATE}}/g, fmt(offerDate))
+    .replace(/{{CANDIDATE_NAME}}/g,    candidateName || '')
+    .replace(/{{JOB_TITLE}}/g,         jobTitle || '')
+    .replace(/{{DEPARTMENT}}/g,        department || '')
+    .replace(/{{REPORTING_MANAGER}}/g, reportingManager)
+    .replace(/{{DATE_OF_JOINING}}/g,   fmt(dateOfJoining))
+    .replace(/{{TOTAL_CTC}}/g,         totalCTC || '')
+    .replace(/{{OFFER_DATE}}/g,        fmt(offerDate))
     .replace(/{{ACCEPTANCE_DEADLINE}}/g, fmt(acceptanceDeadline))
     .replace(/{{FOUNDER_SIGNATURE_HTML}}/g, signatureHtml)
-    .replace(/{{MELLONE_LOGO_SRC}}/g, logoDataUri);
+    .replace(/{{MELLONE_LOGO_SRC}}/g,  logoDataUri);
 }
 
 function filenameDate(dateOfJoining) {
@@ -76,22 +78,23 @@ function filenameDate(dateOfJoining) {
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 // Preview — returns rendered HTML for browser display
-app.post('/preview', upload.single('founderSignature'), (req, res) => {
+// Uses upload.none() to parse multipart form data (no file fields anymore)
+app.post('/preview', upload.none(), (req, res) => {
   try {
-    const html = buildHtml(req.body, buildSignatureHtml(req.file), getLogoDataUri());
+    const html = buildHtml(req.body);
     res.set('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
   } catch (err) {
     console.error('Preview error:', err);
-    res.status(500).json({ error: 'Preview failed. ' + err.message });
+    res.status(500).json({ error: 'Preview failed: ' + err.message });
   }
 });
 
-// Generate PDF — renders via Puppeteer and streams the file
-app.post('/generate-pdf', upload.single('founderSignature'), async (req, res) => {
+// Generate PDF
+app.post('/generate-pdf', upload.none(), async (req, res) => {
   let browser;
   try {
-    const html = buildHtml(req.body, buildSignatureHtml(req.file), getLogoDataUri());
+    const html = buildHtml(req.body);
 
     browser = await puppeteer.launch({
       headless: 'new',
@@ -99,9 +102,6 @@ app.post('/generate-pdf', upload.single('founderSignature'), async (req, res) =>
     });
 
     const page = await browser.newPage();
-
-    // networkidle2 (≤2 open connections) avoids hanging on external font requests
-    // while still allowing Google Fonts to finish loading before capture
     await page.setContent(html, { waitUntil: 'networkidle2', timeout: 60000 });
 
     const pdfBuffer = await page.pdf({
@@ -115,8 +115,7 @@ app.post('/generate-pdf', upload.single('founderSignature'), async (req, res) =>
     browser = null;
 
     const safeName = (req.body.candidateName || 'Candidate').replace(/\s+/g, '_');
-    const datePart = filenameDate(req.body.dateOfJoining);
-    const filename = `Offer_Letter_${safeName}_${datePart}.pdf`;
+    const filename = `Offer_Letter_${safeName}_${filenameDate(req.body.dateOfJoining)}.pdf`;
 
     res.set({
       'Content-Type': 'application/pdf',
