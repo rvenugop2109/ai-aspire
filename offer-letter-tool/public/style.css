@@ -200,6 +200,47 @@ input.error {
   display: block;
 }
 
+/* ── Button row ── */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+/* ── Preview button ── */
+.btn-preview {
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--deep-blue);
+  background: transparent;
+  border: 2px solid var(--deep-blue);
+  border-radius: 8px;
+  padding: 13px 28px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.18s, color 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-preview:hover {
+  background: var(--deep-blue);
+  color: #fff;
+}
+
+.btn-preview:hover svg {
+  stroke: #fff;
+}
+
+.btn-preview:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 /* ── CTA button ── */
 .btn-generate {
   font-family: 'Sora', sans-serif;
@@ -211,8 +252,7 @@ input.error {
   border-radius: 8px;
   padding: 14px 36px;
   cursor: pointer;
-  margin-top: 32px;
-  width: 100%;
+  flex: 1;
   letter-spacing: 0.3px;
   transition: background 0.18s, transform 0.12s;
   display: flex;
@@ -283,4 +323,6 @@ input.error {
 @media (max-width: 620px) {
   .card { padding: 28px 20px; }
   .field-grid { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column; }
+  .btn-preview { justify-content: center; }
 }

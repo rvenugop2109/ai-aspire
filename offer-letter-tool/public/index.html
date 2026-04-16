@@ -89,10 +89,16 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-generate" id="generateBtn">
-          <div class="spinner"></div>
-          <span class="btn-text">Generate Offer Letter PDF</span>
-        </button>
+        <div class="btn-row">
+          <button type="button" class="btn-preview" id="previewBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Preview</span>
+          </button>
+          <button type="submit" class="btn-generate" id="generateBtn">
+            <div class="spinner"></div>
+            <span class="btn-text">Generate PDF</span>
+          </button>
+        </div>
 
       </form>
     </div>
@@ -103,6 +109,7 @@
   <script>
     const form = document.getElementById('offerForm');
     const btn  = document.getElementById('generateBtn');
+    const previewBtn = document.getElementById('previewBtn');
     const toast = document.getElementById('toast');
 
     const requiredFields = [
@@ -146,6 +153,38 @@
         document.getElementById(id).classList.remove('error');
         document.getElementById('err-' + id).classList.remove('visible');
       });
+    });
+
+    previewBtn.addEventListener('click', async () => {
+      if (!validate()) {
+        showToast('Please fill in all required fields before previewing.', true);
+        return;
+      }
+
+      previewBtn.disabled = true;
+      previewBtn.querySelector('span').textContent = 'Loading…';
+
+      try {
+        const formData = new FormData(form);
+        const response = await fetch('/preview', { method: 'POST', body: formData });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || 'Preview failed');
+        }
+
+        const html = await response.text();
+        const blob = new Blob([html], { type: 'text/html' });
+        const url  = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Revoke after a short delay so the new tab has time to load it
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      } catch (err) {
+        showToast('Preview error: ' + err.message, true);
+      } finally {
+        previewBtn.disabled = false;
+        previewBtn.querySelector('span').textContent = 'Preview';
+      }
     });
 
     form.addEventListener('submit', async (e) => {
