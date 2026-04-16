@@ -38,6 +38,12 @@ body {
   line-height: 1.5;
 }
 
+.server-banner a {
+  color: #5A4000;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .server-banner code {
   background: rgba(0,0,0,0.08);
   border-radius: 4px;

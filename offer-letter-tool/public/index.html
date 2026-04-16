@@ -122,12 +122,20 @@
       'dateOfJoining', 'totalCTC', 'offerDate', 'acceptanceDeadline',
     ];
 
-    // ── Server health check on load ──────────────────────────────────────────
-    fetch('/health').then(r => {
-      if (r.ok) banner.hidden = true;
-    }).catch(() => {
+    // ── Detect file:// vs http:// ─────────────────────────────────────────────
+    if (window.location.protocol === 'file:') {
       banner.hidden = false;
-    });
+      banner.innerHTML = '<strong>Wrong URL.</strong> This page must be opened via the server, not as a file. ' +
+        'Run <code>node server.js</code> in the <code>offer-letter-tool</code> folder, then visit ' +
+        '<a href="http://localhost:3000" target="_blank">http://localhost:3000</a> in your browser.';
+    } else {
+      // ── Server health check on load ────────────────────────────────────────
+      fetch('/health').then(r => {
+        if (r.ok) banner.hidden = true;
+      }).catch(() => {
+        banner.hidden = false;
+      });
+    }
 
     // ── Toast ────────────────────────────────────────────────────────────────
     function showToast(msg, isError = false, duration = 5000) {
